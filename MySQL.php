@@ -53,20 +53,20 @@ class MySQL {
 	*/
 	public static function connect() {
 		if (self :: getTest()) {		
-			mysql_pconnect(MySQL :: getServer(),MySQL :: getUser(), MySQL :: getPassword()) or die("Error: " . __FILE__ . " : " . __LINE__ . " : Chyba v pripojeni k databazovemu serveru");
-			mysql_select_db(MySQL :: getDatabase()) or die("Error: " . __FILE__." : ".__LINE__." : Chyba v pripojeni k databazi")
-			mysql_query("SET CHARACTER SET ". MySQL :: getCharacter()) or die("Error: " . __FILE__ . " : " . __LINE__ . " : Chyba v nastaveni porovnavani");
+			mysql_pconnect(self :: getServer(),self :: getUser(), self :: $Password) or die("Error: " . __FILE__ . " : " . __LINE__ . " : Chyba v pripojeni k databazovemu serveru");
+			mysql_select_db(self :: getDatabase()) or die("Error: " . __FILE__." : ".__LINE__." : Chyba v pripojeni k databazi")
+			mysql_query("SET CHARACTER SET ". self :: getCharacter()) or die("Error: " . __FILE__ . " : " . __LINE__ . " : Chyba v nastaveni porovnavani");
 			return TRUE;
 		}
 		else {
 			try {
-				if (!(mysql_pconnect(MySQL :: getServer(),MySQL :: getUser(), MySQL :: $password))) {
+				if (!(mysql_pconnect(self :: getServer(),self :: getUser(), self :: $password))) {
 					throw new Exception;
 				}
-				if (!(mysql_select_db(MySQL :: getDatabase()))) {
+				if (!(mysql_select_db(self :: getDatabase()))) {
 					throw new Exception;
 				}
-				if (!(mysql_query("SET CHARACTER SER ". MySQL :: getCharacter()))) {
+				if (!(mysql_query("SET CHARACTER SER ". self :: getCharacter()))) {
 					throw new Exception;
 				}
 				return TRUE
