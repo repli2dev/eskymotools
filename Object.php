@@ -11,7 +11,7 @@
 abstract class Object {
 
 	/**
-	* @var value Polozka nesouci hodnotu objektu
+	* @var Object Polozka nesouci hodnotu objektu
 	*/	
 	public $value;
 
@@ -20,7 +20,7 @@ abstract class Object {
 	* @param value Pozadovana hodnota.
 	* @return void
 	*/
-	public function __construct($value) {
+	public function __construct($value = NULL) {
 		$this->setValue($value);
 	}
 
