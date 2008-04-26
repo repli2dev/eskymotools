@@ -22,6 +22,11 @@ class Page extends Object {
 	private $post = array;
 
 	/**
+	* @var array Obraz superglobalniho pole $_SESSION[]
+	*/
+	private $session = array;
+
+	/**
 	* @var array Pole hodnot (objektu) stranky.
 	*/
 	private $value = array;
@@ -32,19 +37,28 @@ class Page extends Object {
 	private $numVal = 0;
 
 	/**
-	* Konstruktor - nacte superglobalni pole do atributu $get, $post (kontroluje se jejich obsah).
+	* Konstruktor - nacte superglobalni pole do atributu self :: $get, self :: $post (kontroluje se jejich obsah).
+	* @see self :: $get
 	*/
 	public function __construct() {
+		session_start();
 	}
 	
 	/**
-	* Vrati danou polozku z atributu $get.
+	* Vrati danou polozku z atributu self :: $get.
 	* @param string
 	* @return array_item
 	*/
 	public function get($key) {
 		return $this->get[$key];
+		$this->loadGet();
+		$this->loadPost();
+		$this->loadSession();
 	}
+	
+	/**
+	* Nahraje pole $_GET[] do atributu
+	*/	
 	
 	/**
 	* Nastavi danou polozku atributu $get na danou hodnotu.
