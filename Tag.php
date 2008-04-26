@@ -6,7 +6,7 @@
 
 /**
 * @package eskymoFW
-* Trida slouzici jako predek pro vsehcny HTML tagy
+* Trida slouzici jako predek pro vsechny HTML tagy.
 */
 class Tag extends Object {
 
@@ -28,12 +28,17 @@ class Tag extends Object {
 	/**
 	* @var string Parametr ID tagu.
 	*/
-	protected $id
+	protected $id;
 	
 	/**
-	* @var string Odezva na udalost onClick
+	* @var array Pole parametru HTML tagu.
+	*/	
+	protected $atribut = array();
+	
+	/**
+	* @var array Pole udalosti (javascript)
 	*/
-	protected $onClick;
+	protected $event = array();
 	
 	/**
 	* Konstruktor.
@@ -48,13 +53,21 @@ class Tag extends Object {
 	* @return void
 	*/
 	public function view() {
+		$evt = "";
+		foreach ($this->event AS $key => $value) {
+			$evt .= " $key = "\"$value\"";
+		}
+		$atribut = "";
+		foreach ($this->atribit AS $key => $value) {
+			$atribut .= " $key = "\"$value\"";
+		}
 		if ($this->pair) {
-			echo "<$this->tag class = $this->class id = $this->id> onClick = $this->onClick";
-			$this->value->print;
+			echo "<$this->tag class = \"$this->class\" id = \"$this->id\" $atribut $evt>";
+			$this->value->view();
 			echo "</$this->tag>";
 		}
 		else {
-			echo "<$this->tag class = $this->class id = $this->id";
+			echo "<$this->tag class = \"$this->class\" id = \"$this->id\" $atribut $evt />";
 		}
 	}
 	

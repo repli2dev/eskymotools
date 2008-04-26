@@ -5,7 +5,7 @@
 */
 
 /**
-* @package eskymoFFW
+* @package eskymoFW
 * Tato trida slouzi jako predek pro tridy nesouci nejakou hodnotu.
 */
 abstract class Object {

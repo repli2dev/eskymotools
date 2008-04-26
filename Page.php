@@ -6,30 +6,29 @@
 
 /**
 * @package eskymoFW
-* Trida slouzici pro obsluhu stranky
+* Trida slouzici pro obsluhu stranky.
 */
-
 class Page extends Object {
 
 	/**
 	* @var array Obraz superglobalniho pole $_GET[].
 	*/
-	private $get = array;
+	private $get = array();
 	
 	/**
 	* @var array Obraz superglobalniho pole $_POST[].
 	*/
-	private $post = array;
+	private $post = array();
 
 	/**
 	* @var array Obraz superglobalniho pole $_SESSION[]
 	*/
-	private $session = array;
+	private $session = array();
 
 	/**
 	* @var array Pole hodnot (objektu) stranky.
 	*/
-	private $value = array;
+	private $value = array();
 
 	/**
 	* @var int Pocet objektu v poli hodnot.
@@ -74,7 +73,7 @@ class Page extends Object {
 	
 	
 	/**
-	* Nahraje pole $_GET[] do atributu Page::$get
+	* Nahraje pole $_GET[] do atributu Page::$get.
 	* @see Page::$get
 	* @return void
 	*/	
@@ -85,7 +84,7 @@ class Page extends Object {
 	}
 	
 	/**
-	* Nahraje pole $_POST[] do atributu Page::$get
+	* Nahraje pole $_POST[] do atributu Page::$get.
 	* @see Page::$post
 	* @return void
 	*/
@@ -96,7 +95,7 @@ class Page extends Object {
 	}
 	
 	/**
-	* Nahraje pole $_SESSION[] do atributu Page::$session
+	* Nahraje pole $_SESSION[] do atributu Page::$session.
 	* @see Page::$session
 	* @return void
 	*/
@@ -150,7 +149,7 @@ class Page extends Object {
 	}	
 
 	/**
-	* Nastavi danou polozku atributu Page::$session na danou hodnotu
+	* Nastavi danou polozku atributu Page::$session na danou hodnotu.
 	* @see Page::$session
 	* @param string Nazev polozky
 	* @param array_item Hodnota polozky
