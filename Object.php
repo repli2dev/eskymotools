@@ -1,11 +1,11 @@
 <?php
 /**
-* @package eskymoFrame
+* @package eskymoFW
 * @author Eskymaci
 */
 
 /**
-* @package eskymoFrame
+* @package eskymoFFW
 * Tato trida slouzi jako predek pro tridy nesouci nejakou hodnotu.
 */
 abstract class Object {
