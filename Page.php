@@ -31,7 +31,17 @@ class Page extends Object {
 	private $value = array();
 
 	/**
-	* @var int Pocet objektu v poli hodnot.
+	* @var array Pole externich souboru.
+	*/
+	protected static $externFile = array();
+
+	/**
+	* @var int Pocet souboru v poli externich souboru Page::$externFile.
+	*/
+	protected static $numFile = 0;
+		
+	/**
+	* @var int Pocet objektu v poli hodnot Page::$value.
 	*/
 	private $numVal = 0;
 
@@ -169,6 +179,25 @@ class Page extends Object {
 		$this->numVal++;
 		$this->value[$this->numVal] = $object;
 		return $this->numVal;
+	}
+
+	/**
+	* Prida JS soubor do pole externich souboru Page::$externFile na zaklade hlavicky fce.
+	* @param string Hlavicka JS fce. 
+	*/
+	public static function addJsFile($fun) {
+		/* NENI HOTOVE -------------------------------------------------------------------*/
+		$fn = "/js/".$fun.".js";
+		$help = FALSE;
+		foreach (self::$externFile AS $item) {
+			if ($item == $fn) {
+				$help = TRUE;
+			} 
+		}
+		if ($help) {
+			self::$numFile++;
+			self::$externFile[self::$numFile] = $fn;	
+		}
 	}
 	
 	/**
