@@ -1,3 +1,4 @@
+<?php
 /**
 * @package eskymoFW
 * @author Eskymaci
@@ -5,23 +6,33 @@
 
 /**
 * @package eskymoFW
-* Trida slouzici pro praci s HTML tagem <a></a>.
+* Trida slouzici pro praci s HTML tagem <link />.
 */
 class Link extends Tag {
 
 	/**
 	* Konstruktor.
-	* @param Object
+	* @param string Hodnota atributu rel.
+	* @param string Hodnota atributu style.
+	* @param string Hodnota atributu href.
 	* @return void
 	*/
-	public function __construct($value = NULL) {
-		parent :: __construct($value);
-		$this->setTag("a");
-		$this->setPair();
+	public function __construct($rel = NULL, $type = NULL, $href = NULL) {
+		parent :: __construct();
+		$this->setTag("link");
+		if ($rel) {
+			$this->rel($rel);
+		}
+		if ($type) {
+			$this->type($type);
+		}
+		if ($href) {
+			$this->href($href);
+		}
 	}
 
 	/**
-	* Nastavi adresu odkazu.
+	* Nastavi adresu (href).
 	* @param string Adresa
 	* @return void
 	*/
@@ -30,11 +41,21 @@ class Link extends Tag {
 	}
 	
 	/**
-	* Nastavi titulek odkazu.
-	* @param string Titulek.
+	* Nastavi typ (type).
+	* @param string Type.
 	* @return void
 	*/
-	public function title($title) {
-		$this->addAtribut("title",$title);
+	public function type($type) {
+		$this->addAtribut("type",$type);
+	}
+	
+	/**
+	* Nastavi atribut rel.
+	* @param string Rel.
+	* @return void
+	*/
+	public function rel($rel) {
+		$this->addRel("rel",$rel);
 	}
 }
+?>

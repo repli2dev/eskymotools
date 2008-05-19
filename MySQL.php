@@ -53,9 +53,9 @@ class MySQL {
 	*/
 	public static function connect() {
 		if (self :: getTest()) {		
-			mysql_pconnect(self :: getServer(),self :: getUser(), self :: $Password) or die("Error: " . __FILE__ . " : " . __LINE__ . " : Chyba v pripojeni k databazovemu serveru");
-			mysql_select_db(self :: getDatabase()) or die("Error: " . __FILE__." : ".__LINE__." : Chyba v pripojeni k databazi")
-			mysql_query("SET CHARACTER SET ". self :: getCharacter()) or die("Error: " . __FILE__ . " : " . __LINE__ . " : Chyba v nastaveni porovnavani");
+			mysql_pconnect(self :: getServer(),self :: getUser(), self :: $Password) or die(Language :: $error . __FILE__ . " : " . __LINE__ . Language :: $noDBServer);
+			mysql_select_db(self :: getDatabase()) or die(Language :: $error . __FILE__." : ".__LINE__. Language :: $noDB);
+			mysql_query("SET CHARACTER SET ". self :: getCharacter()) or die(Language :: $error . __FILE__ . " : " . __LINE__ . Language :: $wrongCharset);
 			return TRUE;
 		}
 		else {
@@ -69,7 +69,7 @@ class MySQL {
 				if (!(mysql_query("SET CHARACTER SER ". self :: getCharacter()))) {
 					throw new Exception;
 				}
-				return TRUE
+				return TRUE;
 				
 			}
 			catch (Exception $e) {
@@ -182,12 +182,12 @@ class MySQL {
 	*/
 	public static function query($sql,$file = NULL, $line = NULL) {
 		if (self :: $test) {
-			mysql_query($sql) or die ("Error: " . $file . " : " . $line . " : " . $sql);
-			return TRUE
+			mysql_query($sql) or die (Language :: $error . $file . " : " . $line . " : " . $sql);
+			return TRUE;
 		}
 		else {
 			try {
-				if (!(mysql_query($sql)) {
+				if (!(mysql_query($sql))) {
 					throw new Exception;
 				}
 				return TRUE;

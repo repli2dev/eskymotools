@@ -1,10 +1,5 @@
 <?php
-/*
 require_once("Object.php");
-require_once("String.php");
-require_once("Page.php");
-*/
-
 /**
 * @package eskymoFW
 * @author Eskymaci
@@ -29,7 +24,7 @@ class Tag extends Object {
 	/**
 	* @var boolean Parovy (TRUE) / Neparovy tag (FALSE).
 	*/
-	protected $pair;	
+	protected $pair = FALSE;	
 
 	/**
 	* @var string Nazev tagu.
@@ -53,7 +48,9 @@ class Tag extends Object {
 	*/
 	public function __construct($value = NULL) {
 		parent :: __construct();
-		$this->addValue($value);
+		if ($value) {
+			$this->addValue($value);
+		}
 	}
 	
 	/**
@@ -107,7 +104,7 @@ class Tag extends Object {
 	/**
 	* Nastavi atribut class.
 	* @param string
-	* @retun void
+	* @return void
 	*/
 	public function setClass($class) {
 		$this->setAtribut("class",$class);
@@ -200,17 +197,4 @@ class Tag extends Object {
 		}
 	}	
 }
-/*
-$tag = new Tag(new String("odkaz"));
-$tag->setTag("a");
-$tag->addAtribut("href","ahoj");
-$tag->setID("odkaz");
-$tag->addEvent("onClick","js()");
-$tag->setPair(TRUE);
-$tag2 = new Tag($tag);
-$tag2->addValue($tag);
-$tag2->setPair();
-$tag2->setTag("div");
-$tag2->view();
-*/
 ?>
