@@ -1,3 +1,4 @@
+<?php
 /**
 * @package eskymoFW
 * @author Eskymaci
@@ -7,10 +8,9 @@
 * @package eskymoFW
 * Trida slouzici jako nositel textu, ktery se vypisuje na obrazovku.
 */
-<?php
 class Language {
 
-	public static $error = "Chyba";'
+	public static $error = "Chyba";
 	
 	public static $noDBServer = "Chyba v pripojeni k databazovemu serveru.";
 	

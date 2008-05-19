@@ -53,9 +53,9 @@ class MySQL {
 	*/
 	public static function connect() {
 		if (self :: getTest()) {		
-			mysql_pconnect(self :: getServer(),self :: getUser(), self :: $Password) or die(Language :: $error . __FILE__ . " : " . __LINE__ . Language :: $noDBServer);
-			mysql_select_db(self :: getDatabase()) or die(Language :: $error . __FILE__." : ".__LINE__. Language :: $noDB);
-			mysql_query("SET CHARACTER SET ". self :: getCharacter()) or die(Language :: $error . __FILE__ . " : " . __LINE__ . Language :: $wrongCharset);
+			mysql_pconnect(self :: getServer(),self :: getUser(), self :: $password) or die(Language :: $error . " : " . __FILE__ . " : " . __LINE__ . Language :: $noDBServer);
+			mysql_select_db(self :: getDatabase()) or die(Language :: $error . " : " . __FILE__ . " : " .__LINE__ . " : " . Language :: $noDatabase);
+			mysql_query("SET CHARACTER SET ". self :: getCharacter()) or die(Language :: $error . " : " . __FILE__ . " : " . __LINE__ . " : " . Language :: $wrongCharset);
 			return TRUE;
 		}
 		else {

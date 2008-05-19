@@ -92,6 +92,8 @@ class Page extends Object {
 		$this->loadGet();
 		$this->loadPost();
 		$this->loadSession();
+		MySQL::connect();
+		parrent::__construct();
 	}
 	
 	/**
@@ -308,14 +310,4 @@ class Page extends Object {
 		echo "</html>";
 	} 
 }
-$a = new A(new String("odkaz1"),"aaa");
-$a->addValue(new String("Odkaz2"));
-$a->view();
-
-$ul = new Ul;
-$li = new String("polozka");
-$ul->addValue($li);
-$ul->addValue($li);
-$ul->view();
-
 ?>
