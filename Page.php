@@ -243,14 +243,14 @@ class Page extends Object {
 		$fn = split("\(",$fun);
 		$fn = $fn[0];
 		$help = FALSE;
-		foreach (self::$externJS AS $item) {
+		foreach (Page::$externJS AS $item) {
 			if ($item == $fn) {
 				$help = TRUE;
 			} 
 		}
 		if (!$help) {
-			self::$numJS++;
-			self::$externJS[self::$numJS] = $fn;	
+			Page::$numJS++;
+			Page::$externJS[self::$numJS] = $fn;	
 		}
 		return self::$numJS;
 	}
@@ -289,8 +289,8 @@ class Page extends Object {
 			$link->view();
   		}
   		unset($link);
-  		foreach(self :: $externJS AS $item) {
-  			$script = new Script("text/javascript", self::$dirJS . $item . ".js");
+  		foreach(Page :: $externJS AS $item) {
+  			$script = new Script("text/javascript", Page::$dirJS . $item . ".js");
   			$script->view();
   		}
   		unset($script);
