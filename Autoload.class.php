@@ -6,6 +6,7 @@
 /**
 * Automaticky nahrava soubory s deklarovanymi tridami.
 * @package eskymoFW
+* @example doc_example/Autoload.phps
 */
 class Autoload {
 
@@ -27,7 +28,7 @@ class Autoload {
 
 	/**
 	* Prida cestu do pole cest Autoload::$directory.
-	* @param string Cesta k deklarovanym tridam (nesmi zacinat ani koncit lomitkem)
+	* @param string Cesta k deklarovanym tridam (nesmi zacinat ani koncit lomitkem, resp. teckou)
 	* @return void
 	*/
 	public static function add($dir) {

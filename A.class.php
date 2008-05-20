@@ -7,6 +7,7 @@
 /**
 * @package eskymoFW
 * Trida slouzici pro praci s HTML tagem <link />.
+* @example doc_example/A.phps
 */
 class A extends Tag {
 
@@ -23,6 +24,9 @@ class A extends Tag {
 		$this->setPair();
 		if ($href) {
 			$this->href($href);
+		}
+		elseif ($value) {
+			$this->href($value->getValue());
 		}
 		if ($title) {
 			$this->title($title);

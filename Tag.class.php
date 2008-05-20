@@ -1,5 +1,4 @@
 <?php
-require_once("Object.php");
 /**
 * @package eskymoFW
 * @author Eskymaci
@@ -46,7 +45,7 @@ class Tag extends Object {
 	* @param Object
 	* @return void
 	*/
-	public function __construct($value = NULL) {
+	public function __construct(&$value = NULL) {
 		parent :: __construct();
 		if ($value) {
 			$this->addValue($value);
@@ -59,7 +58,10 @@ class Tag extends Object {
 	* @param Object
 	* @return int Poradi objektu v poli hodnot. 
 	*/		
-	public function addValue($object) {
+	public function addValue(&$object) {
+		if (getType($object) != "object") {
+			$object = new String($object);
+		}
 		$this->numVal++;
 		$this->value[$this->numVal] = $object;
 		return $this->numVal;

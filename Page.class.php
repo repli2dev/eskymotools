@@ -1,15 +1,4 @@
 <?php
-require_once("Object.php");
-require_once("Tag.php");
-require_once("String.php");
-require_once("Script.php");
-require_once("Link.php");
-require_once("A.php");
-require_once("Ul.php");
-require_once("Li.php");
-
-
-
 /**
 * @package eskymoFW
 * @author Eskymaci
@@ -30,6 +19,16 @@ class Page extends Object {
 	* @var array Obraz superglobalniho pole $_POST[].
 	*/
 	private $post = array();
+
+	/**
+	* @var boolean Zapne/Vypne sessions.
+	*/	
+	const sessionSwitcher = FALSE;
+
+	/**
+	* @var boolean Zapne/Vypne praci s MySQL
+	*/
+	const mysqlSwitcher = TRUE;
 
 	/**
 	* @var array Obraz superglobalniho pole $_SESSION[]
@@ -64,13 +63,18 @@ class Page extends Object {
 	/**
 	* @var string Adresar, kde se nachazi CSS soubory.
 	*/
-	public static $dirCSS = "css/";
+	const dirCSS = "css/";
 	
 	/**
 	* @var string Adresar, kde se nachazi JS soubory.
 	*/	
-	public static $dirJS = "js/";
+	const dirJS = "js/";	
 	
+	/**
+	* @var string Pouzita znakova sada.
+	*/
+	const charset = "utf-8";
+
 	/**
 	* @var int Pocet objektu v poli hodnot Page::$value.
 	*/
@@ -88,12 +92,16 @@ class Page extends Object {
 	* @see Page::$session
 	*/
 	public function __construct() {
-		session_start();
+		if (self::sessionSwitcher) {
+			session_start();
+			$this->loadSession();
+		}
 		$this->loadGet();
 		$this->loadPost();
-		$this->loadSession();
-		MySQL::connect();
-		parrent::__construct();
+		if (self::mysqlSwitcher) {		
+			MySQL::connect();
+		}
+		parent::__construct();
 	}
 	
 	/**
@@ -285,14 +293,19 @@ class Page extends Object {
 		<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\">
 		<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"cs\" lang=\"cs\">
   			<head>
-  		";  			
+  		";  		
+		$tag = new Tag;
+		$tag->setTag("meta");
+		$tag->addAtribut("http-equiv","Content-Type");
+		$tag->addAtribut("content","text/html; charset=". self::charset);
+		$tag->view();
   		foreach($this->styleSheet AS $item) {
-			$link = new Link("stylesheet", "text/css", self::$dirCSS . $item);
+			$link = new Link("stylesheet", "text/css", self::dirCSS . $item);
 			$link->view();
   		}
   		unset($link);
   		foreach(Page :: $externJS AS $item) {
-  			$script = new Script("text/javascript", Page::$dirJS . $item . ".js");
+  			$script = new Script("text/javascript", self::dirJS . $item . ".js");
   			$script->view();
   		}
   		unset($script);

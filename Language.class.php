@@ -10,12 +10,12 @@
 */
 class Language {
 
-	public static $error = "Chyba";
+	const error = "Chyba";
 	
-	public static $noDBServer = "Chyba v pripojeni k databazovemu serveru.";
+	const noDBServer = "Chyba v pripojeni k databazovemu serveru.";
 	
-	public static $noDatabase = "Chyba v pripojeni k databazi.";
+	const noDatabase = "Chyba v pripojeni k databazi.";
 	
-	public static $wrongCharset = "Chyba v nastaveni porovnavani.";
+	const wrongCharset = "Chyba v nastaveni porovnavani.";
 }
 ?>
