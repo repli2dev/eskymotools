@@ -5,11 +5,12 @@
 */
 
 /**
-* @package eskymoFW
 * Tato trida slouzi pro komunikaci s MySQL databazi.
+* @package eskymoFW
 */
 class MySQL {
 	
+
 	/**
 	* @var boolean Promenna, ktera urcuje, zda je trida v testovacim rezimu (TRUE) nebo ne (FALSE). Nefunguje, pokud jsou zapnuty vyjimky.
 	*/
