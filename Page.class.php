@@ -54,6 +54,11 @@ class Page extends Object {
 	private $numCSS;
 	
 	private static $externJS = array();
+
+	/**
+	* Promenna nesouci prvky stranky.
+	*/
+	private $value = array();
 	
 	/**
 	* Konstruktor - nacte superglobalni pole do atributu Page::$get, Page::$post, Page::$session (kontroluje se jejich obsah).
@@ -285,7 +290,7 @@ class Page extends Object {
   			$script->view();
   		}
   		unset($script);
-		$title = new HTMLTag(new String($title));
+		$title = new HTMLTag(new String($this->title));
   		$title->setPair();
   		$title->setTag("title");
   		$title->view();
