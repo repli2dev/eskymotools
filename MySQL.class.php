@@ -10,16 +10,15 @@
 */
 class MySQL {
 	
-
 	/**
 	* @var boolean Promenna, ktera urcuje, zda je trida v testovacim rezimu (TRUE) nebo ne (FALSE). Nefunguje, pokud jsou zapnuty vyjimky.
 	*/
-	private static $testSwitcher = TRUE;
+	private static $switcherTest = TRUE;
 
 	/**
 	* @var boolean Zapne/Vypne predavani vyjimek na vyssi uroven.
 	*/
-	private static $exceptionSwitcher = FALSE;
+	private static $switcherException = FALSE;
 
 	/**
 	* @var string Server, na kterem bezi databaze.
@@ -29,7 +28,7 @@ class MySQL {
 	/**
 	* @var string Nazev databaze, se kterou pracuji.
 	*/
-	private static $database = "zkouska";
+	private static $database = "reader";
 
 	/**
 	* @var string Jmeno uzivatele databaze.
@@ -115,7 +114,7 @@ class MySQL {
 				if (!(mysql_select_db(self :: getDatabase()))) {
 					throw new Exception;
 				}
-				if (!(mysql_query("SET CHARACTER SER ". self :: getCharacter()))) {
+				if (!(mysql_query("SET CHARACTER SET ". self :: getCharacter()))) {
 					throw new Exception;
 				}
 				return TRUE;
@@ -165,7 +164,7 @@ class MySQL {
 	* @return boolean
 	*/	
 	public static function getTest() {
-		return self :: $testSwitcher;
+		return self :: $switcherTest;
 	}
 	
 	/**
@@ -173,7 +172,7 @@ class MySQL {
 	* @return boolean
 	*/
 	public static function getException() {
-		return self::$exceptionSwitcher;
+		return self::$switcherException;
 	}
 
 	/**
@@ -227,7 +226,7 @@ class MySQL {
 	* @return void
 	*/	
 	public static function setTest($test) {
-		self :: $testSwitcher = $test;
+		self :: $switcherTest = $test;
 	}
 	
 	/**
@@ -236,7 +235,7 @@ class MySQL {
 	* @return void
 	*/
 	public static function setException($e) {
-		self::$exceptionSwitcher = $e;
+		self::$switcherException = $e;
 	}
 
 	/**
@@ -247,9 +246,10 @@ class MySQL {
 	* @return boolean
 	*/
 	public static function query($sql,$file = NULL, $line = NULL) {
-		if (self::$exceptionSwitcher) {
+		if (self::getException()) {
 			try {
 				$help = self::queryWithException($sql,$file,$line);
+				return $help;
 			}
 			catch(Exception $e) {
 				throw new Exception($e->getMessage());
@@ -271,13 +271,26 @@ class MySQL {
 	private static function queryWithException($sql,$file = NULL, $line = NULL) {
 		try {		
 			if (!($help = mysql_query($sql))) {
-				throw new Exception(Language :: error . " : " . $file . " : " . $line . " : " . $sql);
+				throw new Exception(Language::ERROR . " : " . $file . " : " . $line . " : " . $sql);
 			}
+			return $help;
 		}
 		catch(Exception $e) {
 			throw new Exception($e->getMessage());
 			return $help;
 		}
+	}
+
+	/**
+	* Formatuje vkladane hodnoty (pridava uvozovky).
+	* @param value
+	* @return value
+	*/
+	public static function formatValue($value) {
+		if ((gettype($value) != "integer") and (gettype != "double")) {
+			$value = "'$value'";
+		}
+		return $value;
 	}
 
 	/**
@@ -289,11 +302,59 @@ class MySQL {
 	*/
 	private static function queryWithoutException($sql,$file = NULL, $line = NULL) {
 		if (self :: getTest()) {
-			return mysql_query($sql) or die (Language :: error . " : " . $file . " : " . $line . " : " . $sql);
+			$ret = mysql_query($sql) or die (Language::ERROR . " : " . $file . " : " . $line . " : " . $sql);
+			return $ret;
 		}
 		else {
 			return mysql_query($sql);
 		}
+	}
+
+	/**
+	* Vytvori a provede INSERT dotaz
+	* @param string Nazev tabulky
+	* @param array_string Pole vkladanych hodnot, indexy oznacuji nazvy prislusnych sloupcu.
+	*/
+	public static function insert($tableName,$input) {
+		$column = "";
+		$value = "";
+		foreach ($input AS $key => $item) {
+			if ($column != "") {
+				$column .= ", ";
+				$value .= ", ";
+				
+			}
+			$column .= $key;
+			$value .= self::formatValue($item);
+		}
+		$sql = "INSERT INTO $tableName ($column) VALUES($value)";
+		MySQL::query($sql,__FILE__,__LINE__);		
+	}
+
+	/**
+	* Vytvori a provede UPDATE dotaz
+	* @param string Nazev tabulky
+	* @param array_string Pole zmen, indexy oznacuji nazvy prislusnych sloupcu.
+	* @param array_string Pole podminek, indexy oznacuji operator s predchozi podminkou. 
+	* @return void
+	*/
+	public static function update($tableName,$changes,$cond) {
+		$update = "";
+		foreach ($changes AS $key => $item) {
+			if ($update != "") {
+				$update .= ", ";
+			}
+			$update .= "$key = ". self::formatValue($item);
+		}
+		$condition = "";
+		foreach ($cond AS $key => $item) {
+			if ($condition != "") {
+				$condition .= " $key ";
+			}
+			$condition .= $item;
+		}
+		$sql = "UPDATE $tableName SET $update WHERE $condition";
+		MySQL::query($sql);
 	}
 }
 ?>

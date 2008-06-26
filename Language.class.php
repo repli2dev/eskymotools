@@ -10,12 +10,14 @@
 */
 class Language {
 
-	const error = "Chyba";
+	const ERROR = "Chyba";
 	
-	const noDBServer = "Chyba v pripojeni k databazovemu serveru.";
+	const NO_DB_SERVER = "Chyba v pripojeni k databazovemu serveru.";
 	
-	const noDatabase = "Chyba v pripojeni k databazi.";
+	const NO_DATABASE = "Chyba v pripojeni k databazi.";
 	
-	const wrongCharset = "Chyba v nastaveni porovnavani.";
+	const WRONG_CHARSET = "Chyba v nastaveni porovnavani.";
+
+	const WITHOUT_IMPORTANT_COLUMN = "Nebyly vyplněny všechny nutné položky pro vytvoření záznamu v databázi.";
 }
 ?>

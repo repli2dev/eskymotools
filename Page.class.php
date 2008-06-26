@@ -21,14 +21,23 @@ class Page extends Object {
 	private $post = array();
 
 	/**
-	* @var boolean Zapne/Vypne sessions.
+	 * @var string Kodovani zobrazovanych stranek.
+	 */
+	const CHARSET = "utf-8";
+	
+	const DIR_JS = "js/";
+	
+	const DIR_CSS = "style/";
+	
+	/**
+	* @var boolean Zapne (Vypne) sessions.
 	*/	
-	const sessionSwitcher = FALSE;
+	const SWITCHER_SESSION = FALSE;
 
 	/**
 	* @var boolean Zapne/Vypne praci s MySQL
 	*/
-	const mysqlSwitcher = TRUE;
+	const SWITCHER_MYSQL = TRUE;
 
 	/**
 	* @var array Obraz superglobalniho pole $_SESSION[]
@@ -36,55 +45,16 @@ class Page extends Object {
 	private $session = array();
 
 	/**
-	* @var array Pole hodnot (objektu) stranky.
-	*/
-	private $value = array();
-
-	/**
-	* @var array Pole externich javascriptovych fci.
-	*/
-	protected static $externJS = array();
-
-	/**
-	* @var int Pocet souboru s JS fcemi v poli externich souboru Page::$externJS.
-	*/
-	protected static $numJS = 0;
-
-	/**
-	* @var array Pole externich CSS souboru.
-	*/
-	protected $styleSheet = array();	
-		
-	/**
-	* @var int Pocet externich CSS souboru v Page::$styleSheet.
-	*/	
-	protected $numCSS;
-
-	/**
-	* @var string Adresar, kde se nachazi CSS soubory.
-	*/
-	const dirCSS = "css/";
-	
-	/**
-	* @var string Adresar, kde se nachazi JS soubory.
-	*/	
-	const dirJS = "js/";	
-	
-	/**
-	* @var string Pouzita znakova sada.
-	*/
-	const charset = "utf-8";
-
-	/**
-	* @var int Pocet objektu v poli hodnot Page::$value.
-	*/
-	private $numVal = 0;
-
-	/**
 	* @var string Titulek stranky.
 	*/
 	private $title;
 
+	private $styleSheet = array();
+	
+	private $numCSS;
+	
+	private static $externJS = array();
+	
 	/**
 	* Konstruktor - nacte superglobalni pole do atributu Page::$get, Page::$post, Page::$session (kontroluje se jejich obsah).
 	* @see Page::$get
@@ -92,13 +62,13 @@ class Page extends Object {
 	* @see Page::$session
 	*/
 	public function __construct() {
-		if (self::sessionSwitcher) {
+		if (self::SWITCHER_SESSION) {
 			session_start();
 			$this->loadSession();
 		}
 		$this->loadGet();
 		$this->loadPost();
-		if (self::mysqlSwitcher) {		
+		if (self::SWITCHER_MYSQL) {		
 			MySQL::connect();
 		}
 		parent::__construct();
@@ -112,9 +82,6 @@ class Page extends Object {
 	*/
 	public function get($key) {
 		return $this->get[$key];
-		$this->loadGet();
-		$this->loadPost();
-		$this->loadSession();
 	}
 	
 	/**
@@ -126,8 +93,7 @@ class Page extends Object {
 		/* TOTO NENI HOTOVE --------------------------------------- */
 		return $s;
 	}
-	
-	
+
 	/**
 	* Nahraje pole $_GET[] do atributu Page::$get.
 	* @see Page::$get
@@ -155,13 +121,23 @@ class Page extends Object {
 	* @see Page::$session
 	* @return void
 	*/
-	private function loadSession() {
+	public function loadSession() {
 		foreach ($_SESSION AS $key => $item) {
 			$this->setSession($key,$item);
 		}
 		
 	}
 	
+	/**
+	* Znovu nahraje superglobalni promenne.
+	* @return void
+	*/
+	public static function reload() {
+		self::loadPost();
+		self::loadGet();
+		self::loadSession();
+	}
+
 	/**
 	* Nastavi danou polozku atributu Page::$get na danou hodnotu.
 	* @see Page::$get
@@ -272,12 +248,12 @@ class Page extends Object {
 	*/
 	public function addStyleSheet($fn) {
 		$help = FALSE;
-		foreach ($this->$styleSheet AS $item) {
+		foreach ($this->styleSheet AS $item) {
 			if ($item == $fn) {
 				$help = TRUE;
 			}
 		}
-		if ($help) {
+		if (!$help) {
 			$this->numCSS++;
 			$this->styleSheet[$this->numCSS] = $fn;
 		}
@@ -294,22 +270,22 @@ class Page extends Object {
 		<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"cs\" lang=\"cs\">
   			<head>
   		";  		
-		$tag = new Tag;
+		$tag = new HTMLTag;
 		$tag->setTag("meta");
 		$tag->addAtribut("http-equiv","Content-Type");
-		$tag->addAtribut("content","text/html; charset=". self::charset);
+		$tag->addAtribut("content","text/html; charset=". self::CHARSET);
 		$tag->view();
   		foreach($this->styleSheet AS $item) {
-			$link = new Link("stylesheet", "text/css", self::dirCSS . $item);
+			$link = new Link("stylesheet", "text/css", self::DIR_CSS . $item);
 			$link->view();
   		}
   		unset($link);
   		foreach(Page :: $externJS AS $item) {
-  			$script = new Script("text/javascript", self::dirJS . $item . ".js");
+  			$script = new Script("text/javascript", self::DIR_JS . $item . ".js");
   			$script->view();
   		}
   		unset($script);
-		$title = new Tag(new String($title));
+		$title = new HTMLTag(new String($title));
   		$title->setPair();
   		$title->setTag("title");
   		$title->view();

@@ -22,7 +22,6 @@ abstract class Object {
 	*/
 	public function __construct($value = NULL) {
 		$this->setValue($value);
-		$this->main();
 	}
 
 	/**
@@ -40,13 +39,6 @@ abstract class Object {
 	*/
 	public function getValue() {
 		return $this->value;
-	}
-
-	/**
-	* Metoda, ktera se provede po vytvoreni instance.
-	* @return void
-	*/
-	public function main() {
 	}
 
 	/**

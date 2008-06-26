@@ -52,7 +52,7 @@ class Autoload {
 		return FALSE;
 	}
 }
-
+// Zaregistruje autoload
 spl_autoload_register(array("Autoload","load"));
 
 ?>
