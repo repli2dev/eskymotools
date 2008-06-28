@@ -41,8 +41,8 @@ class Form extends HTMLTag {
 		}
 		//pridani generickeho stylopisu
 		$page->addStyleSheet("form.css");
-		$page->addJsFile("form-".$name.".js");
-		//$page->addEvent("onsubmit","zkontroluj(this)");
+		//$page->addJsFile("form-".$name."");
+		$this->addEvent("onsubmit","zkontroluj(this)");
 	}
 	
 	/**
