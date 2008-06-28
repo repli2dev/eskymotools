@@ -14,12 +14,16 @@ class Form extends HTMLTag {
 	/**
 	 * Konstruktor.
 	 * @param Object obsah formulare
-	 * @param string Atribut action.
-	 * @param string Atribut method.
-	 * @param string Atribut enctype.
+	 * @param String Atribut action.
+	 * @param String Atribut method.
+	 * @param String Atribut enctype.
+	 * @param String Attribut name.
+	 * @param Pointer Atribut enctype.
 	 * @return void
 	 */	 
-	public function __construct($value = NULL, $action = NULL, $method = NULL, $enctype = NULL) {
+	// name je jméno formuláře - pokud je definováno, pokusí se vložit JS
+	// page je ukazatel - řeší problém s Page::addStyleSheet
+	public function __construct($value = NULL, $action = NULL, $method = NULL, $enctype = NULL,$name = NULL,$page = NULL) {
 		parent::__construct($value);
 		$this->setTag("form");
 		$this->setPair();
@@ -35,6 +39,10 @@ class Form extends HTMLTag {
 		elseif ($enctype) {
 			$this->enctype($enctype);
 		}
+		//pridani generickeho stylopisu
+		$page->addStyleSheet("form.css");
+		$page->addJsFile("form-".$name.".js");
+		//$page->addEvent("onsubmit","zkontroluj(this)");
 	}
 	
 	/**
@@ -98,6 +106,89 @@ class Fieldset extends HTMLTag {
 	public function legend($legend){
 		$this->addValue(new Legend($legend));
 	}
+	
+	/**
+	 * Přidá textove policko
+	 * @param Object value
+	 * @param String name
+	 * @param Boolean disabled
+	 * @param Boolean readonly
+	 * @return void
+	 */
+	public function addTextInput($value = NULL, $name = NULL, $disabled = NULL, $readonly = NULL){
+		$this->addValue(new Input($value, $name, "text", $disabled, $readonly));
+	}
+	
+	/**
+	 * Přidá policko pro heslo
+	 * @param Object value
+	 * @param String name
+	 * @param Boolean disabled
+	 * @param Boolean readonly
+	 * @return void
+	 */
+	public function addPasswordInput($value = NULL, $name = NULL, $disabled = NULL, $readonly = NULL){
+		$this->addValue(new Input($value, $name, "password", $disabled, $readonly));
+	}
+	
+	/* Přidá odesílací tlačítko
+	 * @param Object value
+	 * @param String name
+	 * @param Boolean disabled
+	 * @param Boolean readonly
+	 */
+	public function AddSubmitButton($value = NULL, $name = NULL, $disabled = NULL, $readonly = NULL){
+		$this->addValue(new Input($value, $name, "submit", $disabled, $readonly));
+	}
+	
+	/**
+	 * Přidá radio button
+	 * @param Object value
+	 * @param String name
+	 * @param Boolean checked
+	 * @param Boolean disabled
+	 * @param Boolean readonly
+	 */
+	public function AddRadioInput($value = NULL, $name = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
+		$this->addValue(new Radio($value, $name, $checked, $disabled, $readonly));
+	}
+	
+	/**
+	 * Přidá checkbox button
+	 * @param Object value
+	 * @param String name
+	 * @param Boolean checked
+	 * @param Boolean disabled
+	 * @param Boolean readonly
+	 */
+	public function AddCheckboxInput($value = NULL, $name = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
+		$this->addValue(new Checkbox($value, $name, $checked, $disabled, $readonly));
+	}
+	
+	/**
+	 * Přidá textareu
+	 * @param Object value
+	 * @param String name
+	 * @param Integer cols
+	 * @param Integer rows
+	 * @param Boolean disabled
+	 * @param Boolean readonly
+	 * @param String wrap
+	 */
+	public function AddTextarea($value = NULL, $name = NULL, $cols = NULL, $rows = NULL,$disabled = NULL, $readonly = NULL, $wrap = NULL){
+		$this->addValue(new Textarea($value, $name, $cols, $rows,$disabled, $readonly, $wrap));
+	}
+
+	/**
+	 * Přidá select
+	 * @param Object name
+	 * @param Boolean multiple
+	 * @param Integer size
+	 * @param Boolean disabled
+	 */
+	public function AddSelect($name = NULL, $multiple = NULL, $size = NULL,$disabled = NULL){
+		$this->addValue(new Select($name, $multiple, $size,$disabled));
+	}
 }
 /**
 * @package eskymoFW
@@ -157,6 +248,81 @@ class Input extends HTMLTag {
 		}
 	}
 }
+/*
+* @package eskymoFW
+* Trida slouzici pro praci s input tagem <input /> konkrétně s radio inputem
+* @example doc_example/Form.phps
+*/
+class Radio extends Input {
+	
+	/**
+	 * Konstruktor.
+	 * @param Object Attribut Input.
+	 * @param String Attribut name.
+	 * @param Boolean Attribut checked
+	 * @param Boolean Attribut disabled
+	 * @param Boolean Attribut readonly
+	 * @return void
+	 */	 
+	public function __construct($value = NULL, $name = NULL, $checked = NULL, $disabled = NULL, $readonly = NULL) {
+		parent::__construct($value);
+		$this->setTag("input");
+		$this->addAtribut("type", "radio");
+		if ($value) {
+			$this->addAtribut("value", $value->getValue());
+		}
+		if ($checked){
+			$this->addAtribut("checked", "checked");
+		}
+		if ($name){
+			$this->addAtribut("name", $name);
+		}
+		if ($disabled){
+			$this->addAtribut("disabled", $disabled);
+		}
+		if ($readonly){
+			$this->addAtribut("readonly", $readonly);
+		}
+	}
+}
+
+/*
+* @package eskymoFW
+* Trida slouzici pro praci s input tagem <input />
+* @example doc_example/Form.phps
+*/
+class Checkbox extends Input {
+	
+	/**
+	 * Konstruktor.
+	 * @param Object Attribut Input.
+	 * @param String Attribut name.
+	 * @param Boolean Attribut checked
+	 * @param Boolean Attribut disabled
+	 * @param Boolean Attribut readonly
+	 * @return void
+	 */	 
+	public function __construct($value = NULL, $name = NULL, $checked = NULL, $disabled = NULL, $readonly = NULL) {
+		parent::__construct($value);
+		$this->setTag("input");
+		$this->addAtribut("type", "checkbox");
+		if ($value) {
+			$this->addAtribut("value", $value->getValue());
+		}
+		if ($checked){
+			$this->addAtribut("checked", "checked");
+		}
+		if ($name){
+			$this->addAtribut("name", $name);
+		}
+		if ($disabled){
+			$this->addAtribut("disabled", $disabled);
+		}
+		if ($readonly){
+			$this->addAtribut("readonly", $readonly);
+		}
+	}
+}
 
 /*
 * @package eskymoFW
@@ -167,7 +333,13 @@ class Textarea extends HTMLTag {
 	
 	/**
 	 * Konstruktor.
-	 * @param Object Attribut Input.
+	 * @param Object Attribut value.
+	 * @param String Attribut name.
+	 * @param Integer Attribut cols.
+	 * @param Integer Attribut rows.
+	 * @param Boolean Attribut disabled.
+	 * @param Boolean Attribut readonly.
+	 * @param String Attribut wrap.
 	 * @return void
 	 */	 
 	public function __construct($value = NULL, $name = NULL, $cols = NULL, $rows = NULL,$disabled = NULL, $readonly = NULL, $wrap = NULL) {
