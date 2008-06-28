@@ -37,7 +37,7 @@ class Page extends Object {
 	/**
 	* @var boolean Zapne/Vypne praci s MySQL
 	*/
-	const SWITCHER_MYSQL = TRUE;
+	const SWITCHER_MYSQL = FALSE;
 
 	/**
 	* @var array Obraz superglobalniho pole $_SESSION[]
@@ -52,6 +52,8 @@ class Page extends Object {
 	private $styleSheet = array();
 	
 	private $numCSS;
+	
+	private static $numJS;
 	
 	private static $externJS = array();
 
