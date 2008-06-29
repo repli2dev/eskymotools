@@ -37,7 +37,7 @@ class Page extends Object {
 	/**
 	* @var boolean Zapne/Vypne praci s MySQL
 	*/
-	const SWITCHER_MYSQL = FALSE;
+	const SWITCHER_MYSQL = TRUE;
 
 	/**
 	* @var array Obraz superglobalniho pole $_SESSION[]
@@ -49,9 +49,9 @@ class Page extends Object {
 	*/
 	private $title;
 
-	private $styleSheet = array();
+	private static $styleSheet = array();
 	
-	private $numCSS;
+	private static $numCSS;
 	
 	private static $numJS;
 	
@@ -253,18 +253,18 @@ class Page extends Object {
 	* @param string Nazev CSS souboru.
 	* @return int Pocet externich CSS souboru.
 	*/
-	public function addStyleSheet($fn) {
+	public static function addStyleSheet($fn) {
 		$help = FALSE;
-		foreach ($this->styleSheet AS $item) {
+		foreach (self::$styleSheet AS $item) {
 			if ($item == $fn) {
 				$help = TRUE;
 			}
 		}
 		if (!$help) {
-			$this->numCSS++;
-			$this->styleSheet[$this->numCSS] = $fn;
+			self::$numCSS++;
+			self::$styleSheet[self::$numCSS] = $fn;
 		}
-		return $this->numCSS;
+		return self::$numCSS;
 	}
 	
 	/**
@@ -282,7 +282,7 @@ class Page extends Object {
 		$tag->addAtribut("http-equiv","Content-Type");
 		$tag->addAtribut("content","text/html; charset=". self::CHARSET);
 		$tag->view();
-  		foreach($this->styleSheet AS $item) {
+  		foreach(self::$styleSheet AS $item) {
 			$link = new Link("stylesheet", "text/css", self::DIR_CSS . $item);
 			$link->view();
   		}
@@ -307,3 +307,4 @@ class Page extends Object {
 	} 
 }
 ?>
+
