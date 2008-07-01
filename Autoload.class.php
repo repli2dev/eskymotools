@@ -6,7 +6,7 @@
 /**
 * Automaticky nahrava soubory s deklarovanymi tridami.
 * @package eskymoFW
-* @example doc_example/Autoload.phps
+* @example doc_example/Autoload.class.phps
 */
 class Autoload {
 

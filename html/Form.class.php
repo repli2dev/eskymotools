@@ -7,7 +7,7 @@
 /**
 * @package eskymoFW
 * Trida slouzici pro praci s FORM tagem <form></form>.
-* @example doc_example/Form.phps
+* @example doc_example/Form.class.phps
 */
 class Form extends HTMLTag {
 
@@ -22,7 +22,7 @@ class Form extends HTMLTag {
 	 */	 
 	// name je jméno formuláře - pokud je definováno, pokusí se vložit JS
 	// page je ukazatel - řeší problém s Page::addStyleSheet
-	public function __construct($action = NULL, $method = NULL, $enctype = NULL,$name = NULL) {
+	public function __construct($action, $method = NULL, $enctype = NULL,$name = NULL) {
 		$this->setTag("form");
 		$this->setPair();
 		if ($action) {

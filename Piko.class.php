@@ -7,6 +7,7 @@
 
 /**
 * Piko je trida pro praci s ikonami (obrazky). Adresar, se kterym pracuje, musi byt nastaveny na CHMOD 0777.
+* @example doc_example/Piko.class.phps
 * @package eskymoFW
 */
 
@@ -22,38 +23,58 @@ class Piko {
 	* @var int CHMOD ulozeneho obrazku.
 	*/
 	const CHMOD = 0777;
-  
+
+	/**
+	 * @var mixed Pole podporovanych koncovek (typu).
+	 */
+	private static $supported = array("jpg","jpeg","png");
+	
 	/**
 	* @var string Adresar, se kterym se pracuje.
 	* @example directory.php
 	*/
-	private static $directory = "";
-
+	public static $directory = "./";
+	
 	/**
 	* @var int Vyska obrazku.
 	*/
 	private static $imgHeight = 0;
 
+	/**
+	* @var int Sirka obrazku.
+	*/
+	private static $imgWidth = 0;
+	
+	/**
+	 * @var string Typ zpracovavaneho obrazku.
+	 */
+	private static $imgType = "";
+	
 	/** 
 	* @var int Puvodni vyska obrazku.
 	*/
 	private static $imgHeightOrg = 0;
 
 	/**
+	* @var int Puvodni sirka obrazku.
+	*/
+	public static $imgWidthOrg = 0;
+	
+	/**
 	* @var int Maximalni vyska obrazku.
 	*/
-	private static $imgMaxHeight = 100;
-
-	/**
-	* @var int Maximalni datova velikost (v bytech). Pokud se nema kontrolovat, nastavte na 0.
-	*/
-	const IMG_MAX_SIZE = 0;
+	public static $imgMaxHeight = 100;
 
 	/**
 	* @var int Max sirka obrazku
 	*/            
-	const IMG_MAX_WIDTH = 60;
-    
+	public static $imgMaxWidth = 100;
+	
+	/**
+	* @var int Maximalni datova velikost (v bytech). Pokud se nema kontrolovat, nastavte na 0.
+	*/
+	public static $imgMaxSize = 0;
+
 	/**
 	* @var string Nazev obrazku
 	*/
@@ -62,109 +83,126 @@ class Piko {
 	/**
 	* @var string Prefix pro ukladane obrazky.
 	*/
-	const IMG_PREFIX = "";
+	public static $imgPrefix = "";
 
 	/**
-	* @var int Sirka obrazku.
-	*/
-	private static $imgWidth = 0;
-
-	/**
-	* @var int Puvodni sirka obrazku.
-	*/
-	private static $imgWidthOrg = 0;
-
-	/**
-	* @var string Chybova hlaska pro spatny typ obrazku (je podporovan pouze JPEG)
-	*/
-	const LNG_WRONG_TYPE = "Wrong type of image!";
-
-	/**
-	* @var string Chybova hlaska pro prilis velky (datove) obrazek
-	**/
-	const LNG_WRONG_SIZE = "Filesize is too big!";
- 
-	/**
-	* Set array self::$changeChar.
+	* Zmeni specialni znaky v nazvu obrazku definovane v poli specialnich znaku.
 	* @see Piko::$changeChar
-	* @param array
-	* @return void
+	* @param string
+	* @return string
 	*/
-	public static function setChangeChar($char) {
-		self::$changeChar = $char;
+	protected static function changeChar($string) {
+		if (count(self::$changeChar)) {
+			return strTr($string,self::$changeChar);
+		}
+		else return $string;
 	}
-
+	
 	/**
-	* Get array self::$changeChar.
+	* Vrati pole znaku, ktere maji byt zamenovany.
 	* @see Piko::$changeChar
-	* @return array
+	* @return mixed
 	*/
 	public static function getChangeChar() {
 		return self::$changeChar;
 	}
 
 	/**
-	* Nastavi adresar pro nahravane obrazky.
-	* @param string Nazev adresare
-	*/
-	public static function setDirectory($dir) {
-		self::$directory = $dir;
+	 * Vrati adresar, do ktereho se obrazky nahravaji.
+	 * @see Piko::$directory
+	 * @return string
+	 */
+	public static function getDirectory() {
+		return self::$directory;
 	}
-	
-	/**
-	* This method changes special characters in string. The characters are declared in array changeChar.
-	* @see Piko::$changeChar
-	* @param string Input string.
-	* @return string
-	*/
-	protected function changeChar($string) {
-		return strTr($string,self::$changeChar);
-	}
-    
 
 	/**
-	* Return name of last saved image.
+	* Vrati nazev posledniho ulozeneho obrazku.
 	* @return string
 	*/
 	public static function getLast() {
 		return self::$imgName;
 	}
-
+	
 	/**
-	* Return path of last saved image.
+	 * Vrati maximalni vysku nahravanych obrazku.
+	 * @see Piko::$imgMaxHeight
+	 * @return int
+	 */
+	public static function getMaxHeight() {
+		return self::$imgMaxHeight;
+	}
+	
+	/**
+	 * Vrati maximalni datovou velikost (v bytech) nahravanych obrazku. Pokud je nastavena na 0, neni velikost kontrolovana.
+	 * @see Piko::$imgMaxSize
+	 * @return int
+	 */
+	public static function getMaxSize() {
+		return self::$imgMaxSize;
+	}
+	
+	/**
+	 * Vrati maximalni sirku nahravanych obrazku.
+	 * @see Piko::$imgMaxWidth
+	 * @return int
+	 */
+	public static function getMaxWidth() {
+		return self::$imgMaxWidth;
+	}
+	
+	/**
+	* Vrati cestu k poslednimu nahranemu obrazku.
 	* @return string
 	*/
 	public static function getPathOfLast() {
 		return self::$directory.self::$imgName;
 	}
-
+	
 	/**
-	* Get size in bytes of last saved image.
+	 * Vrati pouzivany prefix pro nahravane obrazky.
+	 * @see Piko::$imgPrefix
+	 * @return string
+	 */
+	public static function getPrefix() {
+		return self::$imgPrefix;
+	}
+	
+	/**
+	* Vrati datovou velikost posledniho nahraneho obrazku.
 	* @return int
 	*/
-	public function getSizeOfLast() {
+	public static function getSizeOfLast() {
 		return filesize(self::getPathOfLast());
 	}
 
 	/**
-	* This method controls type of image from source and load it to $this->image. Paramater $img is file array (for example $_FILSE[name]).
-	* @param string Image name.
+	 * Vrati podporovane typy obrazku.
+	 * @see Piko::$supported
+	 * @return mixed 
+	 */
+	public static function getSupported() {
+		return self::$supported;
+	}
+	
+	/**
+	* Zkontroluje typ obrazku a nahraje informace o obrazku. Poku neni typ obrazku podporovan nebo je obrazek datove prilis velky (a tudiz se akce nezdari), vrati FALSE, jinak TRUE.
+	* @param string Nazev obrazku.
 	* @return boolean      
 	*/
 	protected static function load($imgName) {
 		try {
-			$end = array('jpg','jpeg','png');
 			$path = getImageSize($imgName);
-			if ((strPos(strToLower($imgName),$end[0]) or strPos(strToLower($imgName),$end[1]))) {
-				self::$imgType = "jpeg";           
+			$help = TRUE;
+			foreach (self::getSupported() AS $end) {
+				if (strPos(strToLower($imgName),$end)) {
+					self::$imgType = $end;
+					$help = FALSE;
+				}
 			}
-			else if (strPos(strToLower($imgName),$end[2])) {
-				self::$imgType = "png";
+			if (($help) or ((filesize($imgName) > self::$imgMaxSize) and (self::$imgMaxSize != 0))) {
+				throw new Error("");
 			}
-			else {
-				throw new Exception(self::$lngWrongType);
-			}
-			if ((filesize($imgName) > self::$imgMaxSize) and (self::$imgMaxSize != 0)) throw new Exception(self::$lngWrongSize);
 			self::$imgWidth = $path[0];
 			self::$imgWidthOrg = $path[0];
 			self::$imgHeight = $path[1];
@@ -172,35 +210,13 @@ class Piko {
 			self::$imgName = $imgName;
 			return TRUE;
 		}
-		catch(Exception $e) {
-			echo $e->getMessage();
+		catch(Error $e) {
 			return FALSE;
 		}
-	} 
- 
+	} 	
+
 	/**
-	* Save image.
-	* @param string Name of saved image. If method "save" is call without parameter, saved image has name of original image.
-	* @return string Name of saved image.
-	*/ 
-	public static function save($imgName = NULL) {
-		if (!$imgName) {
-			$imgName = self::$imgName;
-		}
-		$imgName = self::$changeChar($imgName);            
-		$out = ImageCreateTrueColor(self::$imgWidth,self::$imgHeight);
-		$source = ImageCreateFromJpeg(self::$imgName);
-		ImageCopyResized ($out,$source,0,0,0,0,self::$imgWidth,self::$imgHeight,$this->imgWidthOrg,$this->imgHeightOrg);
-		ImageJpeg ($out, $this->directory.$this->imgPrefix.$imgName, 50);
-		chmod (self::$directory.self::$imgPrefix.$imgName,self::$chmod);
-		ImageDestroy($out);
-		ImageDestroy($source);
-		self::$imgName = $imgName;
-		return $imgName;             
-         } 
- 
-	/**
-	* This method controls size of image and if it is wrong, it will change it.
+	* Zkontroluje rozmery obrazku a pripadne je i zmeni.
 	* @return void
 	*/
 	private static function reSize() {
@@ -213,12 +229,102 @@ class Piko {
 			self::$imgHeight = self::$imgMaxHeight;   
 		}   
 	}
+	
+	/**
+	* Ulozi obrazek.
+	* @param string Nazev ukladaneho obrazku. Pokud je meteda volana bez tohoto parametru, bude obrazek ulozen pod puvodnim nazvem.
+	* @return string Nazev ulozeneho obrazku.
+	*/ 
+	private static function save($imgName = NULL) {
+		if (!$imgName) {
+			$imgName = self::$imgName;
+		}
+		else {
+			$imgName .= ".".self::$imgType;
+		}
+		$imgName = self::changeChar($imgName);            
+		$out = imagecreatetruecolor(self::$imgWidth,self::$imgHeight);
+		if ((self::$imgType == "jpg") or (self::$imgType == "jpeg")) {
+			$source = ImageCreateFromJpeg(self::$imgName);
+			ImageCopyResized ($out,$source,0,0,0,0,self::$imgWidth,self::$imgHeight,self::$imgWidthOrg,self::$imgHeightOrg);
+			ImageJpeg($out, self::$directory.self::$imgPrefix.$imgName, 50);	
+		}
+		elseif (self::$imgType == "png") {
+			$source = ImageCreateFromPng(self::$imgName);
+			ImageCopyResized ($out,$source,0,0,0,0,self::$imgWidth,self::$imgHeight,self::$imgWidthOrg,self::$imgHeightOrg);
+			ImagePng($out, self::$directory.self::$imgPrefix.$imgName, 50);
+		}
+		chmod (self::$directory.self::$imgPrefix.$imgName,self::CHMOD);
+		ImageDestroy($out);
+		ImageDestroy($source);
+		self::$imgName = $imgName;
+		return $imgName;             
+	} 
+	
+	/**
+	* Nastavi pole znaku, ktere maji byt zamenovany.
+	* @see Piko::$changeChar
+	* @param mixed
+	* @return void
+	*/
+	public static function setChangeChar($chars) {
+		self::$changeChar = $chars;
+	}
+
+	/**
+	 * Nastavi adresar, do ktereho se obrazky nahravaji.
+	 * @see Piko::$directory
+	 * @param string
+	 * @return void
+	 */
+	public static function setDirectory($dir) {
+		self::$directory = $dir;
+	}
+	
+	/**
+	 * Nastavi maximalni vysku nahravanych obrazku.
+	 * @see Piko::$imgMaxHeight
+	 * @param int
+	 * @return void
+	 */
+	public static function setMaxHeight($height) {
+		self::$imgMaxHeight = $height;
+	}
+	
+	/**
+	 * Nastavi maximalni datovou velikost (v bytech) nahravanych obrazku. Pokud je nastavena na 0, neni velikost kontrolovana.
+	 * @see Piko::$imgMaxSize
+	 * @param int
+	 * @return void
+	 */
+	public static function setMaxSize($size) {
+		self::$imgMaxSize = $size;
+	}
+	
+	/**
+	 * Nastavi maximalni sirku nahravanych obrazku.
+	 * @see Piko::$imgMaxWidth
+	 * @param int
+	 * @return void
+	 */
+	public static function setMaxWidth($width) {
+		self::$imgMaxWidth = $width;
+	}
+	
+	/**
+	 * Vrati pouzivany prefix pro nahravane obrazky.
+	 * @see Piko::$imgPrefix
+	 * @param string
+	 * @return void
+	 */
+	public static function setPrefix($prefix) {
+		self::$imgPrefix = $prefix;
+	}
  
 	/**
-	* When you use object "Ico", you will use method "work". Parameter $img is image you want to save.
-	* Parameter $name is name of saved file. If method is called without parameter $name, saved file will be called as original image.
+	* Zpracuje obrazek => nahraje ho na pozadovane misto.
 	* @param FILES_array
-	* @param string Image name without end piece.
+	* @param string Nazev obrazku bez koncovky. Pokud neni vyplneno, bude mit ulozeny obrazek nazev nahravaneho obrazku.
 	* @return boolean
 	* @example work.php   
 	*/
@@ -232,11 +338,15 @@ class Piko {
 			}
 			self::resize();
 			self::save($name);             
-			if (($name != $img[name]) or (self::$directory != "") or (self::$imgPrefix != "")) { unlink($img[name]); }
+			if ((($name != $img[name]) and ($name != NULL)) or (self::$directory != "" and self::$directory != "./") or (self::$imgPrefix != "")) {
+				unlink($img[name]);
+			}
 			return TRUE;
 		}
 		catch(Exception $e) {
-			if ($img) { unlink($img[name]); }    
+			if ($img) {
+				unlink($img[name]);
+			}    
 			return FALSE;          
 		}
 	}

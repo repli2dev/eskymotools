@@ -7,7 +7,7 @@
 /**
 * @package eskymoFW
 * Trida slouzici pro praci s HTML tagem <a></a>.
-* @example doc_example/A.phps
+* @example doc_example/A.class.phps
 */
 class A extends HTMLTag {
 
