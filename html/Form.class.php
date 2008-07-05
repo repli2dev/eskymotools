@@ -11,18 +11,38 @@
 */
 class Form extends HTMLTag {
 
+	private $promene = array();
+	
+	private $fieldsets = array();
 	/**
 	 * Konstruktor.
-	 * @param String Atribut action.
-	 * @param String Atribut method.
-	 * @param String Atribut enctype.
-	 * @param String Attribut name.
-	 * @param Pointer Atribut enctype.
+	 * @param string Atribut action.
+	 * @param string Atribut method.
+	 * @param string Atribut enctype.
+	 * @param integer Attribut id.
+	 * @param boolean Attribut load.
 	 * @return void
 	 */	 
-	// name je jméno formuláře - pokud je definováno, pokusí se vložit JS
-	// page je ukazatel - řeší problém s Page::addStyleSheet
-	public function __construct($action, $method = NULL, $enctype = NULL,$name = NULL) {
+	public function __construct($action, $method = NULL, $enctype = NULL,$id = NULL, $load = NULL) {
+		$promene = $this->getData($id,$method);
+		if($odeslano){
+			//kontrola
+				//uspech
+				//neuspech
+		} else {
+			//zobrazeni formulare
+			$this->renderForm($action,$method,$enctype);
+		}
+	}
+	
+	/**
+	 * vykresli formular
+	 * @param string Atribut action.
+	 * @param string Atribut method.
+	 * @param string Atribut enctype.
+	 * @return void
+	 */
+	public function renderForm($action,$method,$enctype){
 		$this->setTag("form");
 		$this->setPair();
 		if ($action) {
@@ -36,8 +56,24 @@ class Form extends HTMLTag {
 		}
 		//pridani generickeho stylopisu
 		Page::addStyleSheet("form.css");
-		//$page->addJsFile("form-".$name."");
 		$this->addEvent("onsubmit","zkontroluj(this)");
+	}
+		
+	/**
+	 * vykresli formular
+	 * @param integer Atribut id.
+	 * @param string Atribut method.
+	 * @return array
+	 */
+	public function getData($id,$method){
+		if(empty($id)){
+			// nacte z post nebo get
+			
+		} else {
+			// nacte z databaze
+			
+		}
+		return array();
 	}
 	
 	/**
@@ -66,6 +102,114 @@ class Form extends HTMLTag {
 	public function enctype($enctype) {
 		$this->addAtribut("enctype",$enctype);
 	}
+	
+	/**
+	 * Přidá fieldset
+	 * @param string value
+	 * @param string name
+	 * @param boolean disabled
+	 * @param boolean readonly
+	 * @return void
+	 */
+	public function addFieldset($legend = NULL){
+		$num = count($this->filedsets);
+		$this->fieldsets[++$num] = new Fieldset($legend);
+	}
+	public function addToFieldset($value){
+		$num = count($this->filedsets);
+		$this->fieldsets[$num];
+		//TODO: dodělat fieldsety
+	}
+	
+	/**
+	 * Přidá textove policko
+	 * @param string value
+	 * @param string name
+	 * @param boolean disabled
+	 * @param boolean readonly
+	 * @return void
+	 */
+	public function addTextInput($name = NULL, $value = "", $disabled = NULL, $readonly = NULL){
+		$this->addToFieldset(new Input($name, $value, "text", $disabled, $readonly));
+	}
+	
+	/**
+	 * Přidá policko pro heslo
+	 * @param string name
+	 * @param string value
+	 * @param boolean disabled
+	 * @param boolean readonly
+	 * @return void
+	 */
+	public function addPasswordInput($name = NULL, $value = NULL, $disabled = NULL, $readonly = NULL){
+		$this->addValue(new Input($name, $value, "password", $disabled, $readonly));
+	}
+	
+	/* Přidá odesílací tlačítko
+	 * @param string name
+	 * @param string value
+	 * @param boolean disabled
+	 * @param boolean readonly
+	 */
+	public function addSubmitButton($name = NULL, $value = NULL, $disabled = NULL, $readonly = NULL){
+		$this->addValue(new Input($name, $value, "submit", $disabled, $readonly));
+	}
+	
+	/**
+	 * Přidá radio button
+	 * @param string value
+	 * @param string name
+	 * @param boolean checked
+	 * @param boolean disabled
+	 * @param boolean readonly
+	 */
+	public function addRadioInput($name = NULL, $value = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
+		$this->addValue(new Radio($name, $value, $checked, $disabled, $readonly));
+	}
+	
+	/**
+	 * Přidá checkbox button
+	 * @param string value
+	 * @param string name
+	 * @param boolean checked
+	 * @param boolean disabled
+	 * @param boolean readonly
+	 */
+	public function addCheckboxInput($name = NULL, $value = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
+		$this->addValue(new Checkbox($name, $value, $checked, $disabled, $readonly));
+	}
+	
+	/**
+	 * Přidá textareu
+	 * @param string value
+	 * @param string name
+	 * @param integer cols
+	 * @param integer rows
+	 * @param ioolean disabled
+	 * @param boolean readonly
+	 * @param string wrap
+	 */
+	public function addTextarea($name = NULL, $value = NULL, $cols = NULL, $rows = NULL,$disabled = NULL, $readonly = NULL, $wrap = NULL){
+		$this->addValue(new Textarea($name,$value,$cols,$rowd,$disabled,$readonly,$wrap));
+	}
+
+	/**
+	 * Přidá select
+	 * @param string name
+	 * @param boolean multiple
+	 * @param integer size
+	 * @param boolean disabled
+	 * @param mixed Pole hodnot (options), kde index oznacuje zobrazeny text a jeho hodnota hodnotu.
+	 */
+	public function addSelect($name = NULL, $options = array(), $multiple = NULL, $size = NULL,$disabled = NULL){
+		$select = new Select($name, $multiple, $size,$disabled);
+		foreach ($options AS $key => $item) {
+			$select->addOption($key,$item);
+		}
+		$this->addValue($select);
+		unset($select);
+	}
+	
 }
 
 /**
@@ -99,94 +243,8 @@ class Fieldset extends HTMLTag {
 	public function legend($legend){
 		$this->addValue(new Legend($legend));
 	}
-	
-	/**
-	 * Přidá textove policko
-	 * @param Object value
-	 * @param String name
-	 * @param Boolean disabled
-	 * @param Boolean readonly
-	 * @return void
-	 */
-	public function addTextInput($name = NULL, $value = "", $disabled = NULL, $readonly = NULL){
-		$this->addValue(new Input($value, $name, "text", $disabled, $readonly));
-	}
-	
-	/**
-	 * Přidá policko pro heslo
-	 * @param string name
-	 * @param string value
-	 * @param Boolean disabled
-	 * @param Boolean readonly
-	 * @return void
-	 */
-	public function addPasswordInput($name = NULL, $value = NULL, $disabled = NULL, $readonly = NULL){
-		$this->addValue(new Input($value, $name, "password", $disabled, $readonly));
-	}
-	
-	/* Přidá odesílací tlačítko
-	 * @param string name
-	 * @param string value
-	 * @param Boolean disabled
-	 * @param Boolean readonly
-	 */
-	public function addSubmitButton($name = NULL, $value = NULL, $disabled = NULL, $readonly = NULL){
-		$this->addValue(new Input($value, $name, "submit", $disabled, $readonly));
-	}
-	
-	/**
-	 * Přidá radio button
-	 * @param Object value
-	 * @param String name
-	 * @param Boolean checked
-	 * @param Boolean disabled
-	 * @param Boolean readonly
-	 */
-	public function addRadioInput($value = NULL, $name = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
-		$this->addValue(new Radio($value, $name, $checked, $disabled, $readonly));
-	}
-	
-	/**
-	 * Přidá checkbox button
-	 * @param Object value
-	 * @param String name
-	 * @param Boolean checked
-	 * @param Boolean disabled
-	 * @param Boolean readonly
-	 */
-	public function addCheckboxInput($value = NULL, $name = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
-		$this->addValue(new Checkbox($value, $name, $checked, $disabled, $readonly));
-	}
-	
-	/**
-	 * Přidá textareu
-	 * @param Object value
-	 * @param String name
-	 * @param Integer cols
-	 * @param Integer rows
-	 * @param Boolean disabled
-	 * @param Boolean readonly
-	 * @param String wrap
-	 */
-	public function addTextarea($value = NULL, $name = NULL, $cols = NULL, $rows = NULL,$disabled = NULL, $readonly = NULL, $wrap = NULL){
-		$this->addValue(new Textarea($value, $name, $cols, $rows,$disabled, $readonly, $wrap));
-	}
-
-	/**
-	 * Přidá select
-	 * @param Object name
-	 * @param Boolean multiple
-	 * @param Integer size
-	 * @param Boolean disabled
-	 * @param mixed Pole hodnot (options), kde index oznacuje zobrazeny text a jeho hodnota hodnotu.
-	 */
-	public function addSelect($name = NULL, $options = array(), $multiple = NULL, $size = NULL,$disabled = NULL){
-		$select = new Select($name, $multiple, $size,$disabled);
-		foreach ($options AS $key => $item) {
-			$select->addOption($key,$item);
-		}
-		$this->addValue($select);
-		unset($select);
+	public function test(){
+		echo "AHOJ";
 	}
 }
 /**
@@ -227,7 +285,7 @@ class Input extends HTMLTag {
 	 * @param Boolean Attribut readonly
 	 * @return void
 	 */	 
-	public function __construct($value = NULL, $name = NULL, $type = NULL, $disabled = NULL, $readonly = NULL) {
+	public function __construct($name = NULL, $value = NULL, $type = NULL, $disabled = NULL, $readonly = NULL) {
 		parent::__construct($value);
 		$this->setTag("input");
 		if ($value) {
@@ -256,14 +314,14 @@ class Radio extends Input {
 	
 	/**
 	 * Konstruktor.
-	 * @param Object Attribut Input.
-	 * @param String Attribut name.
-	 * @param Boolean Attribut checked
-	 * @param Boolean Attribut disabled
-	 * @param Boolean Attribut readonly
+	 * @param string Attribut Input.
+	 * @param string Attribut name.
+	 * @param boolean Attribut checked
+	 * @param boolean Attribut disabled
+	 * @param boolean Attribut readonly
 	 * @return void
 	 */	 
-	public function __construct($value = NULL, $name = NULL, $checked = NULL, $disabled = NULL, $readonly = NULL) {
+	public function __construct($name = NULL, $value = NULL, $checked = NULL, $disabled = NULL, $readonly = NULL) {
 		parent::__construct($value);
 		$this->setTag("input");
 		$this->addAtribut("type", "radio");
@@ -294,14 +352,14 @@ class Checkbox extends Input {
 	
 	/**
 	 * Konstruktor.
-	 * @param Object Attribut Input.
-	 * @param String Attribut name.
-	 * @param Boolean Attribut checked
-	 * @param Boolean Attribut disabled
-	 * @param Boolean Attribut readonly
+	 * @param string Attribut Input.
+	 * @param string Attribut name.
+	 * @param boolean Attribut checked
+	 * @param boolean Attribut disabled
+	 * @param boolean Attribut readonly
 	 * @return void
 	 */	 
-	public function __construct($value = NULL, $name = NULL, $checked = NULL, $disabled = NULL, $readonly = NULL) {
+	public function __construct($name = NULL, $value = NULL, $checked = NULL, $disabled = NULL, $readonly = NULL) {
 		parent::__construct($value);
 		$this->setTag("input");
 		$this->addAtribut("type", "checkbox");
@@ -332,16 +390,16 @@ class Textarea extends HTMLTag {
 	
 	/**
 	 * Konstruktor.
-	 * @param Object Attribut value.
-	 * @param String Attribut name.
-	 * @param Integer Attribut cols.
-	 * @param Integer Attribut rows.
-	 * @param Boolean Attribut disabled.
-	 * @param Boolean Attribut readonly.
-	 * @param String Attribut wrap.
+	 * @param string Attribut value.
+	 * @param string Attribut name.
+	 * @param integer Attribut cols.
+	 * @param integer Attribut rows.
+	 * @param boolean Attribut disabled.
+	 * @param boolean Attribut readonly.
+	 * @param string Attribut wrap.
 	 * @return void
 	 */	 
-	public function __construct($value = NULL, $name = NULL, $cols = NULL, $rows = NULL,$disabled = NULL, $readonly = NULL, $wrap = NULL) {
+	public function __construct($name = NULL, $value = NULL, $cols = NULL, $rows = NULL,$disabled = NULL, $readonly = NULL, $wrap = NULL) {
 		parent::__construct($value);
 		$this->setTag("textarea");
 		$this->setPair();
