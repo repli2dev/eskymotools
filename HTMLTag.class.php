@@ -13,7 +13,7 @@ class HTMLTag extends Object {
 	/**
 	* @var Object Pole objektu (hodnot tagu).
 	*/
-	private $value = array();	
+	protected $value = array();	
 
 	/**
 	* @var int Pocet objektu v poli hodnot Tag::$value.
@@ -155,6 +155,14 @@ class HTMLTag extends Object {
 	*/	
 	public function getEvent($event) {
 		return $this->event($event);
+	}
+	
+	/**
+	 * Cislo 
+	 * @param unknown_type $num
+	 */
+	public function getValue($num) {
+		 
 	}
 	
 	/**
