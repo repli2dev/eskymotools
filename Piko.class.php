@@ -27,7 +27,7 @@ class Piko {
 	/**
 	 * @var mixed Pole podporovanych koncovek (typu).
 	 */
-	private static $supported = array("jpg","jpeg","png");
+	private static $supported = array("jpg","jpeg","png","gif");
 	
 	/**
 	* @var string Adresar, se kterym se pracuje.
@@ -79,6 +79,11 @@ class Piko {
 	* @var string Nazev obrazku
 	*/
 	private static $imgName = "";
+	
+	/**
+	 * Docasna adresa k obrazku.
+	 */
+	public static $imgTemporaryName = "";
     
 	/**
 	* @var string Prefix pro ukladane obrazky.
@@ -187,27 +192,28 @@ class Piko {
 	
 	/**
 	* Zkontroluje typ obrazku a nahraje informace o obrazku. Poku neni typ obrazku podporovan nebo je obrazek datove prilis velky (a tudiz se akce nezdari), vrati FALSE, jinak TRUE.
-	* @param string Nazev obrazku.
+	* @param FILES_array
 	* @return boolean      
 	*/
-	protected static function load($imgName) {
+	protected static function load($img) {
 		try {
-			$path = getImageSize($imgName);
+			$path = getImageSize($img["tmp_name"]);
 			$help = TRUE;
 			foreach (self::getSupported() AS $end) {
-				if (strPos(strToLower($imgName),$end)) {
+				if (strPos(strToLower($img["name"]),$end)) {
 					self::$imgType = $end;
 					$help = FALSE;
 				}
 			}
-			if (($help) or ((filesize($imgName) > self::$imgMaxSize) and (self::$imgMaxSize != 0))) {
+			if (($help) or ((filesize($img["tmp_name"]) > self::$imgMaxSize) and (self::$imgMaxSize != 0))) {
 				throw new Error("");
 			}
 			self::$imgWidth = $path[0];
 			self::$imgWidthOrg = $path[0];
 			self::$imgHeight = $path[1];
 			self::$imgHeightOrg = $path[1];    
-			self::$imgName = $imgName;
+			self::$imgName = $img["name"];
+			self::$imgTemporaryName = $img["tmp_name"];
 			return TRUE;
 		}
 		catch(Error $e) {
@@ -244,15 +250,24 @@ class Piko {
 		}
 		$imgName = self::changeChar($imgName);            
 		$out = imagecreatetruecolor(self::$imgWidth,self::$imgHeight);
-		if ((self::$imgType == "jpg") or (self::$imgType == "jpeg")) {
-			$source = ImageCreateFromJpeg(self::$imgName);
-			ImageCopyResized ($out,$source,0,0,0,0,self::$imgWidth,self::$imgHeight,self::$imgWidthOrg,self::$imgHeightOrg);
-			ImageJpeg($out, self::$directory.self::$imgPrefix.$imgName, 50);	
-		}
-		elseif (self::$imgType == "png") {
-			$source = ImageCreateFromPng(self::$imgName);
-			ImageCopyResized ($out,$source,0,0,0,0,self::$imgWidth,self::$imgHeight,self::$imgWidthOrg,self::$imgHeightOrg);
-			ImagePng($out, self::$directory.self::$imgPrefix.$imgName, 50);
+		switch(self::$imgType) {
+			case "jpg":
+			case "jpeg":
+				$source = ImageCreateFromJpeg(self::$imgTemporaryName);
+				ImageCopyResized ($out,$source,0,0,0,0,self::$imgWidth,self::$imgHeight,self::$imgWidthOrg,self::$imgHeightOrg);
+				ImageJpeg($out, self::$directory.self::$imgPrefix.$imgName, 50);
+				break;
+			case "png":
+//TODO: Tato metoda nefunguje pro PNG, melo by se to opravit.
+				$source = ImageCreateFromPng(self::$imgTemporaryName);
+				ImageCopyResized ($out,$source,0,0,0,0,self::$imgWidth,self::$imgHeight,self::$imgWidthOrg,self::$imgHeightOrg);
+				ImagePng($source, self::$directory.self::$imgPrefix.$imgName, 50);
+				break;
+			case "gif":
+				$source = ImageCreateFromGif(self::$imgTemporaryName);
+				ImageCopyResized ($out,$source,0,0,0,0,self::$imgWidth,self::$imgHeight,self::$imgWidthOrg,self::$imgHeightOrg);
+				ImageGif($source, self::$directory.self::$imgPrefix.$imgName, 50);				
+				break;
 		}
 		chmod (self::$directory.self::$imgPrefix.$imgName,self::CHMOD);
 		ImageDestroy($out);
@@ -330,23 +345,14 @@ class Piko {
 	*/
 	public static function work($img,$name = NULL) {
 		try { 
-			if (move_uploaded_file($img[tmp_name],"./".$img[name]) != TRUE) {
-				throw new Exception;
-			}
-			if (self::load($img[name]) != TRUE) {
+			if (self::load($img) != TRUE) {
 				throw new Exception;
 			}
 			self::resize();
 			self::save($name);             
-			if ((($name != $img[name]) and ($name != NULL)) or (self::$directory != "" and self::$directory != "./") or (self::$imgPrefix != "")) {
-				unlink($img[name]);
-			}
 			return TRUE;
 		}
 		catch(Exception $e) {
-			if ($img) {
-				unlink($img[name]);
-			}    
 			return FALSE;          
 		}
 	}
