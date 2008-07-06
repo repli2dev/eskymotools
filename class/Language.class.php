@@ -19,5 +19,7 @@ class Language {
 	const WRONG_CHARSET = "Chyba v nastaveni porovnavani.";
 
 	const WITHOUT_IMPORTANT_COLUMN = "Nebyly vyplněny všechny nutné položky pro vytvoření záznamu v databázi.";
+	
+	const WITHOUT_IMPORTANT_FORM_COLUMN = "Nebylo vyplněno pole ";
 }
 ?>

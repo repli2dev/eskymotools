@@ -13,21 +13,21 @@ class Page extends Object {
 	/**
 	* @var array Obraz superglobalniho pole $_GET[].
 	*/
-	private $get = array();
+	private static $get = array();
 	
 	/**
 	* @var array Obraz superglobalniho pole $_POST[].
 	*/
-	private $post = array();
+	private static $post = array();
 
 	/**
 	 * @var string Kodovani zobrazovanych stranek.
 	 */
 	const CHARSET = "utf-8";
 	
-	const DIR_JS = "js/";
-	
-	const DIR_CSS = "style/";
+	const DIR_JS = "javascript/";
+		
+	const DIR_CSS = "css/";
 	
 	/**
 	* @var boolean Zapne (Vypne) sessions.
@@ -42,7 +42,7 @@ class Page extends Object {
 	/**
 	* @var array Obraz superglobalniho pole $_SESSION[]
 	*/
-	private $session = array();
+	private static $session = array();
 
 	/**
 	* @var string Titulek stranky.
@@ -98,6 +98,7 @@ class Page extends Object {
 	*/	
 	public static function control($s) {
 		/* TOTO NENI HOTOVE --------------------------------------- */
+//TODO: Dodelat kontrolu v metode Page::control().
 		return $s;
 	}
 
@@ -108,7 +109,7 @@ class Page extends Object {
 	*/	
 	private function loadGet() {
 		foreach ($_GET AS $key => $item) {
-			$this->setGet($key,$item);
+			self::setGet($key,$item);
 		}
 	}
 	
@@ -119,7 +120,7 @@ class Page extends Object {
 	*/
 	private function loadPost() {
 		foreach ($_POST AS $key => $item) {
-			$this->setPost($key,$item);
+			self::setPost($key,$item);
 		}
 	}
 	
@@ -130,7 +131,7 @@ class Page extends Object {
 	*/
 	public function loadSession() {
 		foreach ($_SESSION AS $key => $item) {
-			$this->setSession($key,$item);
+			self::setSession($key,$item);
 		}
 		
 	}
@@ -152,8 +153,8 @@ class Page extends Object {
 	* @param array_item Hodnota polozky.
 	* @return void
 	*/
-	public function setGet($key,$value) {
-		$this->get[$key] = self :: control($value);
+	public static function setGet($key,$value) {
+		self::$get[$key] = self :: control($value);
 	}
 
 	/**
@@ -162,8 +163,8 @@ class Page extends Object {
 	* @param string
 	* @return array_item
 	*/
-	public function post($key) {
-		return $this->get[$key];
+	public static function post($key) {
+		return self::$post[$key];
 	}
 	
 	/**
@@ -173,8 +174,8 @@ class Page extends Object {
 	* @param array_item Hodnota polozky.
 	* @return void
 	*/
-	public function setPost($key,$value) {
-		$this->post[$key] = self :: control($value);
+	public static function setPost($key,$value) {
+		self::$post[$key] = self :: control($value);
 	}
 	
 	/**
@@ -184,7 +185,7 @@ class Page extends Object {
 	* @return array_item
 	*/
 	public function session($key) {
-		return $this->session[$key];
+		return self::$session[$key];
 	}	
 
 	/**
@@ -194,8 +195,9 @@ class Page extends Object {
 	* @param array_item Hodnota polozky
 	* @return void
 	*/		
-	public function setSession($key,$value) {
-		$this->get[$key] = self :: control($value);
+	public static function setSession($key,$value) {
+		self::$session[$key] = self::control($value);
+		$_SESSION[$key] = self::session($key);
 	}
 
 	/**
@@ -276,7 +278,26 @@ class Page extends Object {
 		<?xml version=\"1.0\" encoding=\"UTF-8\"?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\">
 		<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"cs\" lang=\"cs\">
   			<head>
+  			<script type=\"text/javascript\">
+ 				function getImportantFormColumns(formName) {
+  					var result = new Array();
   		";  		
+		foreach($_SESSION["eskymoImpProp"] AS $key => $impProp) {
+			echo "result['$key'] = new Array(";
+			$help = "";
+			foreach($impProp AS $column) {
+				if ($help) {
+					$help .= ",";
+				}
+				$help .= "'$column'";
+			}
+			echo 	$help;
+			echo "	);";
+		}
+		echo "
+					return result[formName];
+				}</script>
+		";
 		$tag = new HTMLTag;
 		$tag->setTag("meta");
 		$tag->addAtribut("http-equiv","Content-Type");
@@ -288,7 +309,13 @@ class Page extends Object {
   		}
   		unset($link);
   		foreach(Page :: $externJS AS $item) {
-  			$script = new Script("text/javascript", self::DIR_JS . $item . ".js");
+  			if (file_exists(self::DIR_JS.$item.".js")) {
+  				$file = self::DIR_JS.$item.".js";
+  			}
+  			else {
+  				$file = self::DIR_JS.$item.".php";
+  			}
+  			$script = new Script("text/javascript", $file);
   			$script->view();
   		}
   		unset($script);

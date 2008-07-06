@@ -196,11 +196,11 @@ class HTMLTag extends Object {
 			$atribut .= " $key=\"$value\"";
 		}
 		if ($this->pair) {
-			echo "<" . $this->tag . $atribut . $evt . ">\n";
+			echo "\n<" . $this->tag . $atribut . $evt . ">";
 			foreach($this->value AS $item) {
 				$item->view();
 			}
-			echo "\n</$this->tag>";
+			echo "</$this->tag>";
 		}
 		else {
 			echo "<$this->tag $atribut $evt />\n";
