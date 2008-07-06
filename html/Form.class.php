@@ -11,9 +11,8 @@
 */
 class Form extends HTMLTag {
 
-	private $promene = array();
+	private $lastFildset;
 	
-	private $fieldsets = array();
 	/**
 	 * Konstruktor.
 	 * @param string Atribut action.
@@ -56,7 +55,7 @@ class Form extends HTMLTag {
 		}
 		//pridani generickeho stylopisu
 		Page::addStyleSheet("form.css");
-		$this->addEvent("onsubmit","zkontroluj(this)");
+		$this->addEvent("onSubmit","zkontroluj(this)");
 	}
 		
 	/**
@@ -104,45 +103,55 @@ class Form extends HTMLTag {
 	}
 	
 	/**
-	 * Přidá fieldset
-	 * @param string value
-	 * @param string name
-	 * @param boolean disabled
-	 * @param boolean readonly
-	 * @return void
+	 * Přidá fieldset a vrati jeho index v poli hodnot.
+	 * @param string Popisek fieldsetu.
+	 * @return int
 	 */
 	public function addFieldset($legend = NULL){
-		$num = count($this->filedsets);
-		$this->fieldsets[++$num] = new Fieldset($legend);
+		$this->lastFildset = $this->addValue(new Fieldset($legend));
+		return $this->lastFildset;
 	}
+	
+	/**
+	 * Prida polozku do naposledy pridaneho fieldsetu.
+	 * @param Object Formularova polozka
+	 */
 	public function addToFieldset($value){
-		$num = count($this->filedsets);
-		$this->fieldsets[$num];
-		//TODO: dodělat fieldsety
+		$this->value[$this->lastFildset]->addValue($value);
 	}
 	
 	/**
 	 * Přidá textove policko
-	 * @param string value
 	 * @param string name
+	 * @param string Popiska.
+	 * @param string value
 	 * @param boolean disabled
 	 * @param boolean readonly
 	 * @return void
 	 */
-	public function addTextInput($name = NULL, $value = "", $disabled = NULL, $readonly = NULL){
-		$this->addToFieldset(new Input($name, $value, "text", $disabled, $readonly));
+	public function addTextInput($name = NULL, $label = NULL, $value = "", $disabled = NULL, $readonly = NULL){
+		$p = new P();
+		$p->addValue(new Input($name, $value, "text", $disabled, $readonly));
+		$p->addValue(new Label($label));
+		$this->addToFieldset($p);
+		unset($p);
 	}
 	
 	/**
 	 * Přidá policko pro heslo
 	 * @param string name
+	 * @param string Popiska
 	 * @param string value
 	 * @param boolean disabled
 	 * @param boolean readonly
 	 * @return void
 	 */
-	public function addPasswordInput($name = NULL, $value = NULL, $disabled = NULL, $readonly = NULL){
-		$this->addValue(new Input($name, $value, "password", $disabled, $readonly));
+	public function addPasswordInput($name = NULL, $label = NULL, $value = NULL, $disabled = NULL, $readonly = NULL){
+		$p = new P();
+		$p->addValue(new Input($name, $value, "password", $disabled, $readonly));
+		$p->addValue(new Label($label));
+		$this->addToFieldset($p);
+		unset($p);
 	}
 	
 	/* Přidá odesílací tlačítko
@@ -152,62 +161,82 @@ class Form extends HTMLTag {
 	 * @param boolean readonly
 	 */
 	public function addSubmitButton($name = NULL, $value = NULL, $disabled = NULL, $readonly = NULL){
-		$this->addValue(new Input($name, $value, "submit", $disabled, $readonly));
+		$this->addValue(new P(new Input($name, $value, "submit", $disabled, $readonly)));
 	}
 	
 	/**
 	 * Přidá radio button
-	 * @param string value
 	 * @param string name
+	 * @param string Popiska.
+	 * @param string value
 	 * @param boolean checked
 	 * @param boolean disabled
 	 * @param boolean readonly
 	 */
-	public function addRadioInput($name = NULL, $value = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
-		$this->addValue(new Radio($name, $value, $checked, $disabled, $readonly));
+	public function addRadioInput($name = NULL, $label = NULL, $value = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
+		$p = new P();
+		$p->addValue(new Radio($name, $value, $checked, $disabled, $readonly));
+		$p->addValue(new Label($label));
+		$this->addToFieldset($p);
+		unset($p);
 	}
 	
 	/**
 	 * Přidá checkbox button
-	 * @param string value
 	 * @param string name
+	 * @param string Popiska.
+	 * @param string value
 	 * @param boolean checked
 	 * @param boolean disabled
 	 * @param boolean readonly
 	 */
-	public function addCheckboxInput($name = NULL, $value = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
-		$this->addValue(new Checkbox($name, $value, $checked, $disabled, $readonly));
+	public function addCheckboxInput($name = NULL, $label = NULL, $value = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
+		$p = new P();
+		$p->addValue(new Checkbox($name, $value, $checked, $disabled, $readonly));
+		$p->addValue(new Label($label));
+		$this->addToFieldset($p);
+		unset($p);
 	}
 	
 	/**
 	 * Přidá textareu
-	 * @param string value
 	 * @param string name
+	 * @param string Popiska.
+	 * @param String Zobrazeny text.
 	 * @param integer cols
 	 * @param integer rows
 	 * @param ioolean disabled
 	 * @param boolean readonly
 	 * @param string wrap
 	 */
-	public function addTextarea($name = NULL, $value = NULL, $cols = NULL, $rows = NULL,$disabled = NULL, $readonly = NULL, $wrap = NULL){
-		$this->addValue(new Textarea($name,$value,$cols,$rowd,$disabled,$readonly,$wrap));
+	public function addTextarea($name = NULL, $label = NULL, $text = NULL, $cols = NULL, $rows = NULL,$disabled = NULL, $readonly = NULL, $wrap = NULL){
+		$p = new P();
+		$p->addValue(new Textarea($name,$text,$cols,$rows,$disabled,$readonly,$wrap));
+		$p->addValue(new Label($label));
+		$this->addToFieldset($p);
+		unset($p);
 	}
 
 	/**
 	 * Přidá select
 	 * @param string name
+	 * @param mixed Pole hodnot (options), kde index oznacuje zobrazeny text a jeho hodnota hodnotu.
+	 * @param string Popiska.
 	 * @param boolean multiple
 	 * @param integer size
 	 * @param boolean disabled
-	 * @param mixed Pole hodnot (options), kde index oznacuje zobrazeny text a jeho hodnota hodnotu.
 	 */
-	public function addSelect($name = NULL, $options = array(), $multiple = NULL, $size = NULL,$disabled = NULL){
+	public function addSelect($name = NULL, $options = array(), $label = NULL, $multiple = NULL, $size = NULL,$disabled = NULL){
 		$select = new Select($name, $multiple, $size,$disabled);
 		foreach ($options AS $key => $item) {
 			$select->addOption($key,$item);
 		}
-		$this->addValue($select);
+		$p = new P();
+		$p->addValue($select);
 		unset($select);
+		$p->addValue(new Label($label));
+		$this->addToFieldset($p);
+		unset($p);
 	}
 	
 }
@@ -231,9 +260,6 @@ class Fieldset extends HTMLTag {
 		if ($legend) {
 			$this->legend($legend);
 		}
-		if ($value) {
-			$this->setValue($value->getValue());
-		}
 	}
 	/**
 	 * Vytvori legendu fieldsetu
@@ -242,9 +268,6 @@ class Fieldset extends HTMLTag {
 	 */
 	public function legend($legend){
 		$this->addValue(new Legend($legend));
-	}
-	public function test(){
-		echo "AHOJ";
 	}
 }
 /**
@@ -404,7 +427,7 @@ class Textarea extends HTMLTag {
 		$this->setTag("textarea");
 		$this->setPair();
 		if ($value) {
-			$this->setValue($value->getValue());
+			$this->addValue($value);
 		}
 		if ($name){
 			$this->addAtribut("name", $name);
@@ -493,6 +516,19 @@ class Option extends HTMLTag {
 		if ($selected){
 			$this->addAtribut("selected", $selected);
 		}
+	}
+}
+
+class Label extends HTMLTag {
+	
+	/**
+	 * Konstruktor
+	 * @param String Hodnota labelu.
+	 */
+	public function __construct($label) {
+		$this->setTag("label");
+		$this->setPair();
+		$this->addValue($label);
 	}
 }
 ?>
