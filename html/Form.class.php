@@ -131,8 +131,8 @@ class Form extends HTMLTag {
 	 */
 	public function addTextInput($name = NULL, $label = NULL, $value = "", $disabled = NULL, $readonly = NULL){
 		$p = new P();
-		$p->addValue(new Input($name, $value, "text", $disabled, $readonly));
 		$p->addValue(new Label($label));
+		$p->addValue(new Input($name, $value, "text", $disabled, $readonly));
 		$this->addToFieldset($p);
 		unset($p);
 	}
@@ -148,8 +148,8 @@ class Form extends HTMLTag {
 	 */
 	public function addPasswordInput($name = NULL, $label = NULL, $value = NULL, $disabled = NULL, $readonly = NULL){
 		$p = new P();
-		$p->addValue(new Input($name, $value, "password", $disabled, $readonly));
 		$p->addValue(new Label($label));
+		$p->addValue(new Input($name, $value, "password", $disabled, $readonly));
 		$this->addToFieldset($p);
 		unset($p);
 	}
@@ -175,8 +175,8 @@ class Form extends HTMLTag {
 	 */
 	public function addRadioInput($name = NULL, $label = NULL, $value = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
 		$p = new P();
-		$p->addValue(new Radio($name, $value, $checked, $disabled, $readonly));
 		$p->addValue(new Label($label));
+		$p->addValue(new Radio($name, $value, $checked, $disabled, $readonly));
 		$this->addToFieldset($p);
 		unset($p);
 	}
@@ -192,8 +192,8 @@ class Form extends HTMLTag {
 	 */
 	public function addCheckboxInput($name = NULL, $label = NULL, $value = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
 		$p = new P();
-		$p->addValue(new Checkbox($name, $value, $checked, $disabled, $readonly));
 		$p->addValue(new Label($label));
+		$p->addValue(new Checkbox($name, $value, $checked, $disabled, $readonly));
 		$this->addToFieldset($p);
 		unset($p);
 	}
@@ -211,8 +211,8 @@ class Form extends HTMLTag {
 	 */
 	public function addTextarea($name = NULL, $label = NULL, $text = NULL, $cols = NULL, $rows = NULL,$disabled = NULL, $readonly = NULL, $wrap = NULL){
 		$p = new P();
-		$p->addValue(new Textarea($name,$text,$cols,$rows,$disabled,$readonly,$wrap));
 		$p->addValue(new Label($label));
+		$p->addValue(new Textarea($name,$text,$cols,$rows,$disabled,$readonly,$wrap));
 		$this->addToFieldset($p);
 		unset($p);
 	}
@@ -232,9 +232,9 @@ class Form extends HTMLTag {
 			$select->addOption($key,$item);
 		}
 		$p = new P();
+		$p->addValue(new Label($label));
 		$p->addValue($select);
 		unset($select);
-		$p->addValue(new Label($label));
 		$this->addToFieldset($p);
 		unset($p);
 	}
