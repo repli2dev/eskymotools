@@ -183,6 +183,14 @@ class HTMLTag extends Object {
 	}
 	
 	/**
+	 * Vyprazni obsah tagu
+	 * @return void
+	 */
+	public function clean() {
+		$this->value = array();
+	}
+	
+	/**
 	* Vytiskne tag.
 	* @return void
 	*/

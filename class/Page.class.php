@@ -32,7 +32,7 @@ class Page extends Object {
 	/**
 	* @var boolean Zapne (Vypne) sessions.
 	*/	
-	const SWITCHER_SESSION = FALSE;
+	const SWITCHER_SESSION = TRUE;
 
 	/**
 	* @var boolean Zapne/Vypne praci s MySQL
@@ -87,8 +87,13 @@ class Page extends Object {
 	* @param string
 	* @return array_item
 	*/
-	public function get($key) {
-		return $this->get[$key];
+	public function get($key = NULL) {
+		if ($key) {
+			return self::$get[$key];
+		}
+		else {
+			return self::$get; 
+		}
 	}
 	
 	/**
@@ -125,7 +130,7 @@ class Page extends Object {
 	}
 	
 	/**
-	* Nahraje pole $_SESSION[] do atributu Page::$session.
+	* Nahraje pole $_SESSION[] do atributu Page::$session[].
 	* @see Page::$session
 	* @return void
 	*/
@@ -163,8 +168,13 @@ class Page extends Object {
 	* @param string
 	* @return array_item
 	*/
-	public static function post($key) {
-		return self::$post[$key];
+	public static function post($key = NULL) {
+		if ($key) {
+			return self::$post[$key];
+		}
+		else {
+			return self::$post;
+		}
 	}
 	
 	/**
@@ -184,8 +194,13 @@ class Page extends Object {
 	* @param string
 	* @return array_item
 	*/
-	public function session($key) {
-		return self::$session[$key];
+	public function session($key = NULL) {
+		if ($key) {
+			return self::$session[$key];
+		}
+		else {
+			return self::$session;
+		}
 	}	
 
 	/**

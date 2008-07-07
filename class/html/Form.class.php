@@ -9,10 +9,17 @@
 * Trida slouzici pro praci s FORM tagem <form></form>.
 * @example doc_example/Form.class.phps
 */
-class Form extends HTMLTag {
+abstract class Form extends HTMLTag {
 
-	private $lastFildset;
+	/**
+	 * @var int Index naposledy pridaneho fieldsetu v poli hodnot. 
+	 */
+	protected $lastFildset;
 	
+	/**
+	 * @var mixed Data, ze kterych se plni formularove polozky (Page::getDataToFill).
+	 */
+	protected $data = array();
 	/**
 	 * @var string Prefix pro ID pro labely.
 	 */
@@ -23,41 +30,42 @@ class Form extends HTMLTag {
 	 * @param string Nazev formulare.
 	 * @param string Atribut action.
 	 * @param string Atribut method.
+	 * @param string ID polozky, ke ktere ma byt formular vyplnen.
 	 * @param string Atribut enctype.
-	 * @param integer Attribut id.
-	 * @param boolean Attribut load.
 	 * @return void
 	 */	 
-	public function __construct($name,$action, $method = NULL, $enctype = NULL,$id = NULL, $load = NULL) {
-		$this->addAtribut("name",$name);
-		if($odeslano){
-			//kontrola
-				//uspech
-				//neuspech
+	public function __construct($name,$action, $method, $id = NULL, $enctype = NULL) {
+		parent::__construct();
+		// Kontrola odeslani formulare
+		if ($this->isSend()){
+			// Zkontroluje radne vyplneni formulare.
+			if ($this->controlColumnsValue($name,$method)) {
+				$this->execute();
+			}
+			else {
+				$this->getData(NULL,$method);
+				$this->renderForm($name,$action,$method,$enctype);
+			}
 		} else {
-			//zobrazeni formulare
-			$this->renderForm($action,$method,$enctype);
+			$this->getData($id);
+			$this->renderForm($name,$action,$method,$enctype);
 		}
-		$_SESSION["eskymoImpProp"][$name] = array();
-		Page::reload();
 	}
 	
 	/**
 	 * vykresli formular
+	 * @param string Nazev formulare.
 	 * @param string Atribut action.
 	 * @param string Atribut method.
 	 * @param string Atribut enctype.
 	 * @return void
 	 */
-	public function renderForm($action,$method,$enctype){
+	public function renderForm($name,$action,$method,$enctype){
 		$this->setTag("form");
 		$this->setPair();
-		if ($action) {
-			$this->action($action);
-		}
-		if ($method) {
-			$this->method($action);
-		}
+		$this->addAtribut("name",$name);
+		$this->action($action);
+		$this->method($method);
 		if ($enctype) {
 			$this->enctype($enctype);
 		}
@@ -65,23 +73,35 @@ class Form extends HTMLTag {
 		Page::addStyleSheet("form.css");
 		$this->addAtribut("onSubmit","return checkForm(this)");
 		Page::addJsFile("checkForm()");
+		if (getType($_SESSION["eskymoImpProp"]) != "array") {
+			 $_SESSION["eskymoImpProp"] = array();
+		}
+		$_SESSION["eskymoImpProp"][$name] = array();
+		Page::loadSession();
 	}
 		
 	/**
-	 * vykresli formular
+	 * Nastavi pole dat, ze kterych se naplni formular.
+	 * @see Form::$data
 	 * @param integer Atribut id.
 	 * @param string Atribut method.
-	 * @return array
+	 * @return mixed
 	 */
-	public function getData($id,$method){
+	public function getData($id,$method = NULL){
 		if(empty($id)){
-			// nacte z post nebo get
+			if ($method == "post") {
+				$result = Page::post();
+			}
+			elseif ($method == "get") {
+				$result = Page::get();
+			}
 			
-		} else {
-			// nacte z databaze
-			
+		} elseif($id) {
+			if (getType($result = $this->getDataToFill($id)) != "array") {
+				$result = array();  
+			}
 		}
-		return array();
+		$this->data = $result;
 	}
 	
 	/**
@@ -139,13 +159,13 @@ class Form extends HTMLTag {
 	 * @param boolean readonly
 	 * @return void
 	 */
-	public function addTextInput($important,$name, $label = NULL, $value = "", $disabled = NULL, $readonly = NULL){
+	public function addTextInput($important,$name, $label = NULL, $disabled = NULL, $readonly = NULL){
 		if ($important) {
 			$this->setImportant($name);
 		}
 		$p = new P();
 		$p->addValue(new Label($label,$name));
-		$p->addValue(new Input($name, $value, "text", $disabled, $readonly));
+		$p->addValue(new Input($name, $this->data[$name], "text", $disabled, $readonly));
 		$this->addToFieldset($p);
 		unset($p);
 	}
@@ -160,13 +180,13 @@ class Form extends HTMLTag {
 	 * @param boolean readonly
 	 * @return void
 	 */
-	public function addPasswordInput($important,$name, $label = NULL, $value = NULL, $disabled = NULL, $readonly = NULL){
+	public function addPasswordInput($important,$name, $label = NULL, $disabled = NULL, $readonly = NULL){
 		if ($important) {
 			$this->setImportant($name);
 		}
 		$p = new P();
 		$p->addValue(new Label($label,$name));
-		$p->addValue(new Input($name, $value, "password", $disabled, $readonly));
+		$p->addValue(new Input($name, $this->data[$name], "password", $disabled, $readonly));
 		$this->addToFieldset($p);
 		unset($p);
 	}
@@ -177,7 +197,8 @@ class Form extends HTMLTag {
 	 * @param boolean disabled
 	 * @param boolean readonly
 	 */
-	public function addSubmitButton($name, $value = NULL, $disabled = NULL, $readonly = NULL){
+	public function addSubmitButton($name, $value, $disabled = NULL, $readonly = NULL){
+		$this->submitButtons[] = $name;
 		$this->addValue(new P(new Input($name, $value, "submit", $disabled, $readonly)));
 	}
 	
@@ -191,13 +212,13 @@ class Form extends HTMLTag {
 	 * @param boolean disabled
 	 * @param boolean readonly
 	 */
-	public function addRadioInput($important,$name, $label = NULL, $value = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
+	public function addRadioInput($important,$name, $label = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
 		if ($important) {
 			$this->setImportant($name);
 		}
 		$p = new P();
 		$p->addValue(new Label($label,$name));
-		$p->addValue(new Radio($name, $value, $checked, $disabled, $readonly));
+		$p->addValue(new Radio($name, $this->data[$name], $checked, $disabled, $readonly));
 		$this->addToFieldset($p);
 		unset($p);
 	}
@@ -212,13 +233,13 @@ class Form extends HTMLTag {
 	 * @param boolean disabled
 	 * @param boolean readonly
 	 */
-	public function addCheckboxInput($important,$name, $label = NULL, $value = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
+	public function addCheckboxInput($important,$name, $label = NULL, $checked= NULL, $disabled = NULL, $readonly = NULL){
 		if ($important) {
 			$this->setImportant($name);
 		}
 		$p = new P();
 		$p->addValue(new Label($label,$name));
-		$p->addValue(new Checkbox($name, $value, $checked, $disabled, $readonly));
+		$p->addValue(new Checkbox($name, $this->data[$name], $checked, $disabled, $readonly));
 		$this->addToFieldset($p);
 		unset($p);
 	}
@@ -235,13 +256,13 @@ class Form extends HTMLTag {
 	 * @param boolean readonly
 	 * @param string wrap
 	 */
-	public function addTextarea($important,$name, $label = NULL, $text = NULL, $cols = NULL, $rows = NULL,$disabled = NULL, $readonly = NULL, $wrap = NULL){
+	public function addTextarea($important,$name, $label = NULL, $cols = NULL, $rows = NULL,$disabled = NULL, $readonly = NULL, $wrap = NULL){
 		if ($important) {
 			$this->setImportant($name);
 		}
 		$p = new P();
 		$p->addValue(new Label($label,$name));
-		$p->addValue(new Textarea($name,$text,$cols,$rows,$disabled,$readonly,$wrap));
+		$p->addValue(new Textarea($name,$this->data[$name],$cols,$rows,$disabled,$readonly,$wrap));
 		$this->addToFieldset($p);
 		unset($p);
 	}
@@ -278,9 +299,58 @@ class Form extends HTMLTag {
 	 * @return void
 	 */
 	private function setImportant($name) {
+		// Uklada do session nazvy povinnych polozek.
 		$_SESSION["eskymoImpProp"][$this->getAtribut("name")][] = $name;
 	}
 	
+	/**
+	 * Zkontroluje, zda jsou vyplnene povinne polozky ve formulari.
+	 * @param string Nazev formulare.
+	 * @param string Pouzita metoda.
+	 * @return boolean
+	 */
+	protected function controlColumnsValue($name,$method) {
+		$impColumns = Page::session("eskymoImpProp");
+		foreach($impColumns[$name] AS $item) {
+			if ($method == "post") {
+				if (empty($_POST[$item])) {
+					return FALSE;
+				}
+			}
+			else {
+				if (empty($_GET[$item])) {
+					return FALSE;
+				}
+			}
+		}
+		return TRUE;
+	}
+	
+	public function view() {
+		if (gettype($_SESSION) == "array") {
+			Page::loadSession();
+		}
+		parent::view();
+	}
+	
+	/**
+	 * Zjisti, zda je formular odeslan (vrati TRUE). 
+	 * @return boolean
+	 */
+	 protected abstract function isSend();
+	
+	/**
+	 * Provede akci pri uspesnem odeslani formulare.
+	 * @return void
+	 */
+	protected abstract function execute();
+	
+	/**
+	 * Vrati data k naplneni formulare pred odeslanim.
+	 * @param int ID polozky
+	 * @return mixed
+	 */
+	protected abstract function getDataToFill($id);
 	
 }
 
