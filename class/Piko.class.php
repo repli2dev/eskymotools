@@ -48,6 +48,11 @@ class Piko {
 	/**
 	 * @var string Typ zpracovavaneho obrazku.
 	 */
+	private static $imgTypeOrg = "";
+	
+	/**
+	 * @var string Typ ulozeneho obrazku.
+	 */
 	private static $imgType = "";
 	
 	/** 
@@ -84,7 +89,12 @@ class Piko {
 	 * Docasna adresa k obrazku.
 	 */
 	public static $imgTemporaryName = "";
-    
+
+	/**
+	 * @var int Cislo z intervalu <1;100> udavajici kvalitu ulozeneho obrazku.
+	 */
+	private static $imgQuality = 100;
+	
 	/**
 	* @var string Prefix pro ukladane obrazky.
 	*/
@@ -174,6 +184,14 @@ class Piko {
 	}
 	
 	/**
+	 * Vrati cislo udavajici kvalitu ukladaneho obrazku.
+	 * @return int
+	 */
+	public static function getQuality() {
+		return self::$imgQuality;
+	}
+	
+	/**
 	* Vrati datovou velikost posledniho nahraneho obrazku.
 	* @return int
 	*/
@@ -191,6 +209,14 @@ class Piko {
 	}
 	
 	/**
+	 * Vrati typ ulozeneho obrazku. Pokud neni nastaven, ulozi obrazek stejneho typu, jako je original.
+	 * @return string
+	 */
+	public static function getType() {
+		return self::$imgType;
+	}
+	
+	/**
 	* Zkontroluje typ obrazku a nahraje informace o obrazku. Poku neni typ obrazku podporovan nebo je obrazek datove prilis velky (a tudiz se akce nezdari), vrati FALSE, jinak TRUE.
 	* @param FILES_array
 	* @return boolean      
@@ -201,7 +227,7 @@ class Piko {
 			$help = TRUE;
 			foreach (self::getSupported() AS $end) {
 				if (strPos(strToLower($img["name"]),$end)) {
-					self::$imgType = $end;
+					self::$imgTypeOrg = $end;
 					$help = FALSE;
 				}
 			}
@@ -243,33 +269,41 @@ class Piko {
 	*/ 
 	private static function save($imgName = NULL) {
 		if (!$imgName) {
-			$imgName = self::$imgName;
-		}
-		else {
-			$imgName .= ".".self::$imgType;
+			$imgName = explode(".",self::$imgName);
+			$imgName = $imgName[0];
 		}
 		$imgName = self::changeChar($imgName);            
 		$out = imagecreatetruecolor(self::$imgWidth,self::$imgHeight);
-		switch(self::$imgType) {
+		switch(self::$imgTypeOrg) {
 			case "jpg":
 			case "jpeg":
 				$source = ImageCreateFromJpeg(self::$imgTemporaryName);
-				ImageCopyResized ($out,$source,0,0,0,0,self::$imgWidth,self::$imgHeight,self::$imgWidthOrg,self::$imgHeightOrg);
-				ImageJpeg($out, self::$directory.self::$imgPrefix.$imgName, 50);
 				break;
 			case "png":
 //TODO: Tato metoda nefunguje pro PNG, melo by se to opravit.
 				$source = ImageCreateFromPng(self::$imgTemporaryName);
-				ImageCopyResized ($out,$source,0,0,0,0,self::$imgWidth,self::$imgHeight,self::$imgWidthOrg,self::$imgHeightOrg);
-				ImagePng($source, self::$directory.self::$imgPrefix.$imgName, 50);
 				break;
 			case "gif":
-				$source = ImageCreateFromGif(self::$imgTemporaryName);
-				ImageCopyResized ($out,$source,0,0,0,0,self::$imgWidth,self::$imgHeight,self::$imgWidthOrg,self::$imgHeightOrg);
-				ImageGif($source, self::$directory.self::$imgPrefix.$imgName, 50);				
+				$source = ImageCreateFromGif(self::$imgTemporaryName);				
 				break;
 		}
-		chmod (self::$directory.self::$imgPrefix.$imgName,self::CHMOD);
+		ImageCopyResized ($out,$source,0,0,0,0,self::$imgWidth,self::$imgHeight,self::$imgWidthOrg,self::$imgHeightOrg);
+		if (empty(self::$imgType)) {
+			self::setType(self::$imgTypeOrg);
+		}
+		switch(self::$imgType) {
+			case "jpg":
+			case "jpeg":
+				ImageJpeg($out, self::$directory.self::$imgPrefix.$imgName.".".self::$imgType, self::$imgQuality);
+				break;
+			case "png":
+				ImagePng($out, self::$directory.self::$imgPrefix.$imgName.".".self::$imgType, self::$imgQuality);
+				break;
+			case "gif":
+				ImageGif($out, self::$directory.self::$imgPrefix.$imgName.".".self::$imgType, self::$imgQuality,PNG_ALL_FILTERS);
+				break;
+		}
+		chmod (self::$directory.self::$imgPrefix.$imgName.".".self::$imgType,self::CHMOD);
 		ImageDestroy($out);
 		ImageDestroy($source);
 		self::$imgName = $imgName;
@@ -336,6 +370,37 @@ class Piko {
 		self::$imgPrefix = $prefix;
 	}
  
+	/**
+	 * Nastavi kvalitu ukladaneho obrazku.
+	 * @param int Cislo z intervalu <1;100>
+	 * @return boolean
+	 */
+	public static function setQuality($q) {
+		if (($q > 0) && ($q <101)) {
+			self::$imgQuality = $q;
+			return TRUE;
+		}
+		else {
+			return FALSE;
+		}
+		
+	}
+	
+	/**
+	 * Nastavi typ ulozeneho obrazku (musi byt podporovan, v pripade, ze neni, vrati FALSE). Pokud neni nastaven, ulozi obrazek stejneho typu, jako je original.
+	 * @param string
+	 * @return boolean 
+	 */
+	public static function setType($type) {
+		foreach (self::$supported AS $item) {
+			if ($type == $item) {
+				self::$imgType = $type;
+				return TRUE;
+			}
+		}
+		return FALSE;
+	}
+	
 	/**
 	* Zpracuje obrazek => nahraje ho na pozadovane misto.
 	* @param FILES_array
