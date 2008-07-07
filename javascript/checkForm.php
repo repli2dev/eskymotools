@@ -10,6 +10,7 @@ function checkForm(form) {
 		if (form.elements.namedItem(impColumns[i]).value == '') {	
 			var columnLabel = document.getElementById(<? echo "'".Form::LABEL_ID_PREFIX."'"; ?> + form.elements.namedItem(impColumns[i]).name).innerHTML;
 			alert(<? echo "'".Language::WITHOUT_IMPORTANT_FORM_COLUMN."'"; ?> + "'"+columnLabel+"'");
+			return false;
 		}
 	}
 	return true;
