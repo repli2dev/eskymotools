@@ -5,11 +5,11 @@ legend {
 	background:white;
 	padding-left:10px;
 	padging-right:10px;
-	
 }
 label {
 	display:block;
 	text-align:right;
 	margin-right:10px;
-	width:180px;	
+	width:180px;
+	float:left;	
 }
