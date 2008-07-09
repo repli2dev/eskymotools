@@ -349,4 +349,3 @@ class Page extends Object {
 	} 
 }
 ?>
-
