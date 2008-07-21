@@ -37,7 +37,7 @@ class Page extends Object {
 	/**
 	* @var boolean Zapne/Vypne praci s MySQL
 	*/
-	const SWITCHER_MYSQL = TRUE;
+	const SWITCHER_MYSQL = FALSE;
 
 	/**
 	* @var array Obraz superglobalniho pole $_SESSION[]
@@ -334,6 +334,21 @@ class Page extends Object {
   			$script->view();
   		}
   		unset($script);
+		echo "<script type=\"text/javascript\">";
+		echo "var list = [ 'Java', 'JavaScript', 'Perl', 'Ruby', 'PHP', 'Python', 'C', 'C++', '.NET',
+                   'MySQL', 'Oracle', 'PostgreSQL'];";
+		foreach($_SESSION["eskymoSuggest"] AS $name => $value) {
+			$temp = "[ ";
+			foreach($value AS $item){
+				$temp .= "'$item',";
+			}
+			$temp .= " ]";
+			echo "var ".$name." = function(){new Suggest.Local(\"".$name."\", \"suggest_".$name."\", $temp);};
+			window.addEventListener ?
+			window.addEventListener('load', ".$name.", false) :
+			window.attachEvent('onload', ".$name.");\n\n";
+		}
+		echo "</script>";
 		$title = new HTMLTag(new String($this->title));
   		$title->setPair();
   		$title->setTag("title");

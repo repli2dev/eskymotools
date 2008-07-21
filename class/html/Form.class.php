@@ -159,13 +159,23 @@ abstract class Form extends HTMLTag {
 	 * @param boolean readonly
 	 * @return void
 	 */
-	public function addTextInput($important,$name, $label = NULL, $disabled = NULL, $readonly = NULL){
+	public function addTextInput($important,$name, $label = NULL, $disabled = NULL, $readonly = NULL, $suggest = NULL){
 		if ($important) {
 			$this->setImportant($name);
 		}
 		$p = new P();
 		$p->addValue(new Label($label,$name));
-		$p->addValue(new Input($name, $this->data[$name], "text", $disabled, $readonly));
+		$p->addValue($Input = new Input($name, $this->data[$name], "text", $disabled, $readonly));
+		if(!empty($suggest)){
+			$_SESSION["eskymoSuggest"][$name] = $suggest;
+			Page::addStyleSheet("suggest.css");
+			Page::addJsFile("suggest()");
+			$Input->autoComplete("off");
+			$Input->setID($name);
+			$p->addValue($Span = new Span());
+			$Span->setID("suggest_".$name."");
+			$Span->setClass("suggest");
+		}
 		$this->addToFieldset($p);
 		unset($p);
 	}
@@ -440,6 +450,9 @@ class Input extends HTMLTag {
 			$this->addAtribut("readonly", $readonly);
 		}
 	}
+	public function autoComplete($value = NULL){
+		$this->addAtribut("autocomplete", $value);
+	}
 }
 /*
 * @package eskymoFW
@@ -650,4 +663,3 @@ class Label extends HTMLTag {
 	}
 }
 ?>
-
