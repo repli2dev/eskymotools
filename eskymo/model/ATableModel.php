@@ -207,6 +207,7 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 	protected function processQuery(DibiFluent $query) {
 		try {
 			//$query->test();
+			//die();
 			return $query->execute();
 		}
 		catch (DibiDriverException $e) {
@@ -303,7 +304,7 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 		$query = dibi::update($this->tableName(), $input);
 		// Check validity
 		foreach ($this->requiredColumns() AS $column) {
-			if (isset($input[$column]) && empty($input[$column])) {
+			if (key_exists($column, $input) && empty($input[$column])) {
 				throw new NullPointerException("input[$column]");
 			}
 		}
