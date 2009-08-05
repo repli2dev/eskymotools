@@ -140,9 +140,9 @@ li.error dl dd {
 							<span class="info">{if $result instanceof EskymoTestFailure}failure{else}error{/if}</span>
 							<span class="method"><a href="{link show $test,$method}">{$method}</a></span>
 							<dl>
-								<dt>Message</dt>
-									<dd>{$result->getMessage()}</dd>
 								{if $result instanceof EskymoTestFailure}
+									<dt>Message</dt>
+										<dd>{$result->getMessage()}</dd>
 									<?php
 										$info = ExtraArray::firstValue($result->getTrace());
 									?>
@@ -151,6 +151,10 @@ li.error dl dd {
 									<dt>Line</dt>
 										<dd>{$info["line"]}</dd>
 								{else}
+									<dt>Type</dt>
+										<dd>{get_class($result)}</dd>
+									<dt>Message</dt>
+										<dd>{$result->getMessage()}</dd>
 									<dt>Code</dt>
 										<dd>{$result->getCode()}</dd>
 									<dt>File</dt>
