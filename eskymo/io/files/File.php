@@ -467,7 +467,7 @@ class File extends /*Nette\*/Object
 			$rule = "*";
 		}
 		Tools::tryError();
-		$list = glob($this->getPath() . "/" . $rule);
+		$list = glob($this->getPath() . self::SEPARATOR . $rule);
 		if (Tools::catchError($msg)) {
 			throw new IOException($msg, self::ERROR_GENERAL);
 		}
