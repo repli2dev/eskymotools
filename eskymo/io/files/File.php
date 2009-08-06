@@ -55,13 +55,6 @@ class File extends /*Nette\*/Object
 	const ERROR_SECURITY = 10;
 
 	/**
-	 * The filesystem seperator
-	 *
-	 * @var string
-	 */
-	const SEPARATOR = "/";
-
-	/**
 	 * File extension
 	 *
 	 * @var string
@@ -106,7 +99,7 @@ class File extends /*Nette\*/Object
 		if (empty($path)) {
 			throw new NullPointerException("path");
 		}
-		if (String::endsWith($path, self::SEPARATOR)) {
+		if (String::endsWith($path, DIRECTORY_SEPARATOR)) {
 			$path = substr($path, 0, strlen($path) -1);
 		}
 		$this->path = $path;
@@ -322,7 +315,7 @@ class File extends /*Nette\*/Object
 		if (empty($this->parent)) {
 			$dirname = dirname($this->path);
 			// FIXME: UNIX dependent
-			if ($dirname != $this->path && $dirname != self::SEPARATOR) {
+			if ($dirname != $this->path && $dirname != DIRECTORY_SEPARATOR) {
 				$this->parent = new File($dirname);
 			}
 			else {
@@ -467,7 +460,7 @@ class File extends /*Nette\*/Object
 			$rule = "*";
 		}
 		Tools::tryError();
-		$list = glob($this->getPath() . self::SEPARATOR . $rule);
+		$list = glob($this->getPath() . DIRECTORY_SEPARATOR . $rule);
 		if (Tools::catchError($msg)) {
 			throw new IOException($msg, self::ERROR_GENERAL);
 		}
