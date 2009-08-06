@@ -208,7 +208,7 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 		$toInsert = array();
 		foreach ($this->avaiableColumns() AS $key) {
 			if (isset($input[$key])) {
-				$toInsert[] = $input[$key];
+				$toInsert[$key] = $input[$key];
 			}
 		}
 		try {
@@ -238,8 +238,8 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 	 */
 	protected function processQuery(DibiFluent $query) {
 		try {
-			//$query->test();
-			//die();
+//			$query->test();
+//			die();
 			return $query->execute();
 		}
 		catch (DibiDriverException $e) {
@@ -343,7 +343,7 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 		$toUpdated = array();
 		foreach ($this->avaiableColumns() AS $key) {
 			if (isset($input[$key])) {
-				$toInsert[] = $toUpdate[$key];
+				$toUpdate[$key] = $input[$key];
 			}
 		}
 		$query = dibi::update($this->tableName(), $toUpdate);

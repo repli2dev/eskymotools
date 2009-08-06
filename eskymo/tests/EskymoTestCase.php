@@ -95,6 +95,9 @@ abstract class EskymoTestCase extends EskymoObject implements IEskymoTest
 				call_user_func(array($this, $method));
 				$this->fail("Expected '$exceptionClass', but the method '$method' does not throw it.");
 			}
+			catch(EskymoTestFailure $e) {
+				$this->getResult()->addFailure($e);
+			}
 			catch(Exception $e) {
 				if (!($e instanceof $exceptionClass)) {
 					$this->getResult()->addFailure( new EskymoTestFailure("Expected '$exceptionClass', but the method '$method' throws '".get_class($e)."'."));
