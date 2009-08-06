@@ -17,6 +17,13 @@
 abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 {
 	/**
+	 * Names of the avaiable columns of the table which is represeted by this model.
+	 *
+	 * @var array
+	 */
+	private $required;
+
+	/**
 	 * The primary key of the table which is represented by this model.
 	 *
 	 * @var DibiColumnInfo
@@ -26,7 +33,7 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 	/**
 	 * Names of the required columns of the table which is represeted by this model.
 	 *
-	 * @var array|DibiColumnInfo
+	 * @var array
 	 */
 	private $required;
 
@@ -51,6 +58,24 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 		"date"		=> "%d",
 		"enum"		=> "%s"
 	);
+
+	/**
+	 * It returns all avaiable columns
+	 *
+	 * This method is probably used just by methods of this abstract class.
+	 *
+	 * @return array|string Names of required columns
+	 */
+	protected function avaiableColumns() {
+		if (empty($this->avaiable)) {
+			$this->avaiable = array();
+			$columns = $this->getTableInfo()->getColumns();
+			foreach ($columns AS $column) {
+				$this->avaiable[] = $column->getName();
+			}
+		}
+		return $this->avaiable;
+	}
 
 	/**
 	 * It deletes an entity from database.
@@ -179,8 +204,15 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 				throw new NullPointerException("input[". $key ."]");
 			}
 		}
+		// Use just the avaiable columns
+		$toInsert = array();
+		foreach ($this->avaiableColumns() AS $key) {
+			if (isset($input[$key])) {
+				$toInsert[] = $input[$key];
+			}
+		}
 		try {
-			$this->processQuery(dibi::insert($this->tableName(), $input));
+			$this->processQuery(dibi::insert($this->tableName(), $toInsert));
 			// FIXME: Bleee
 			try {
 				return dibi::insertId();
@@ -301,13 +333,20 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 	 */
 	public function updateAll(array $condition, array $input) {
 		$coumns = $this->getTableInfo()->getColumns();
-		$query = dibi::update($this->tableName(), $input);
 		// Check validity
 		foreach ($this->requiredColumns() AS $column) {
 			if (key_exists($column, $input) && empty($input[$column])) {
 				throw new NullPointerException("input[$column]");
 			}
 		}
+		// Use just the avaiable columns
+		$toUpdated = array();
+		foreach ($this->avaiableColumns() AS $key) {
+			if (isset($input[$key])) {
+				$toInsert[] = $toUpdate[$key];
+			}
+		}
+		$query = dibi::update($this->tableName(), $toUpdate);
 		// Create condition
 		foreach ($coumns AS $column) {
 			if (isset($condition[$column->getName()])) {
