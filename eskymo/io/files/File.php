@@ -97,12 +97,9 @@ class File extends /*Nette\*/Object
 	 */
 	public function  __construct($path) {
 		if (empty($path)) {
-			throw new NullPointerException("path");
+			throw new NullPointerException("Argument 'path' is NULL.");
 		}
-		if (String::endsWith($path, DIRECTORY_SEPARATOR)) {
-			$path = substr($path, 0, strlen($path) -1);
-		}
-		$this->path = $path;
+		$this->path = rtrim($path, DIRECTORY_SEPARATOR);
 	}
 
 	/**
@@ -357,6 +354,7 @@ class File extends /*Nette\*/Object
 	 *
 	 * @return FileType
 	 * @throws FileNotFoundException if the file does not exist.
+	 * @throws IOException if there is a problem to get a file type
 	 */
 	public function getType() {
 		if (empty($this->type)) {
@@ -371,8 +369,11 @@ class File extends /*Nette\*/Object
 				$mimeType = $info->file($this->getPath());
 				$finfo->close();
 			}
-			else {
+			elseif (function_exists("mime_content_type")) {
 				$mimeType = mime_content_type($this->getPath());
+			}
+			else {
+				throw new IOException("There is a problem to get content type of the file. Class 'finfo' and function 'mine_content_type' are not avaiable.");
 			}
 			$this->type = new FileType($mimeType);
 		}
