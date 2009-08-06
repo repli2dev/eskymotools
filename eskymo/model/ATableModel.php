@@ -21,7 +21,7 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 	 *
 	 * @var array
 	 */
-	private $required;
+	private $avaiable;
 
 	/**
 	 * The primary key of the table which is represented by this model.
