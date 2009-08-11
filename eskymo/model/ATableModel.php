@@ -200,7 +200,7 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 	public function insert(array $input) {
 		$required = $this->requiredColumns();
 		foreach ($required AS $key) {
-			if (empty($input[$key])) {
+			if (!isset($input[$key])) {
 				throw new NullPointerException("input[". $key ."]");
 			}
 		}
