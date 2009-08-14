@@ -347,7 +347,7 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 			}
 		}
 		// Use just the avaiable columns
-		$toUpdated = array();
+		$toUpdate = array();
 		foreach ($this->avaiableColumns() AS $key) {
 			if (isset($input[$key])) {
 				$toUpdate[$key] = $input[$key];
