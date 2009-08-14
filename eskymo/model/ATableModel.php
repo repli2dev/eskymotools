@@ -311,18 +311,11 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 		if (empty($id)) {
 			throw new NullPointerException("id");
 		}
-		// Use just the avaiable columns
-		$toUpdate = array();
-		foreach ($this->avaiableColumns() AS $key) {
-			if (isset($input[$key])) {
-				$toUpdate[$key] = $input[$key];
-			}
-		}
 		$rows = $this->findAll()->where("%n = %i", $this->identificator(), $id);
 		if ($rows->count() == 0) {
 			throw new DataNotFoundException("id");
 		}
-		$result = $this->updateAll(array($this->identificator() => $id), $toUpdate);
+		$result = $this->updateAll(array($this->identificator() => $id), $input);
 		return ($result == 0) ? FALSE : TRUE;
 	}
 
