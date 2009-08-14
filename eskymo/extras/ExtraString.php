@@ -8,6 +8,19 @@ class ExtraString
 {
 
 	/**
+	 * It checks if the string represents a datetime.
+	 *
+	 * @param string $datetime
+	 * @return bool
+	 */
+	public static function isDateTime($datetime) {
+		if (empty($datetime)) {
+			throw new NullPointerException("datetime");
+		}
+		return ereg("^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2} [0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}$",$datetime);
+	}
+
+	/**
 	 * It generates random string with specified length.
 	 *
 	 * @param int $length
