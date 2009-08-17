@@ -110,7 +110,7 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 		foreach ($coumns AS $column) {
 			if (isset($condition[$column->getName()])) {
 				$query->where(
-					"%n = ". Tools::arrayGet(self::$types, $column->getNativeType()),
+					"%n = ". Tools::arrayGet(self::$types, String::lower($column->getNativeType())),
 					$column->getName(),
 					$condition[$column->getName()]
 				);
