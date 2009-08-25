@@ -68,6 +68,8 @@ class FileType extends /*Nette\*/Object
 
 	const QUICKTIME = 1018;
 
+	const MPEG = 1028;
+
 	const PDF = 1019;
 
 	const PSD = 1020;
@@ -128,6 +130,7 @@ class FileType extends /*Nette\*/Object
 		// audio/video
 		'audio/mpeg'						=> self::MP3,
 		'video/quicktime'					=> self::QUICKTIME,
+		'video/mpeg'						=> self::MPEG,
 
 		// adobe
 		'application/pdf'					=> self::PDF,
