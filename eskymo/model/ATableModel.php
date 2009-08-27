@@ -272,7 +272,7 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 			$this->required = array();
 			$columns = $this->getTableInfo()->getColumns();
 			foreach ($columns AS $column) {
-				if (!$column->isNullable() && $column->getName() != $this->identificator()) {
+				if (!$column->isNullable() && $column->getName() != $this->identificator() && String::lower($column->getNativeType()) != "timestamp") {
 					$this->required[] = $column->getName();
 				}
 			}
