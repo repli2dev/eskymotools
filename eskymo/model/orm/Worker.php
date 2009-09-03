@@ -48,7 +48,12 @@ abstract class Worker extends EskymoObject
 			else {
 				$column = $var;
 			}
-			$result[$column] = trim($entity->$var);
+			if (is_object($entity->$var)) {
+				$result[$column] = $entity->$var;
+			}
+			else {
+				$result[$column] = trim($entity->$var);
+			}
 		}
 		return $result;
 	}

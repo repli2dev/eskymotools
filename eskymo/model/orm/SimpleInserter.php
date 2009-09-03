@@ -38,7 +38,7 @@ class SimpleInserter extends Worker implements IInserter
 	 * @param string $table
 	 */
 	private function  __construct($table) {
-		$this->table;
+		$this->table = $table;
 	}
 
 	/**
