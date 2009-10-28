@@ -23,6 +23,6 @@ interface IInserter
 	 * @return int
 	 * @throws InvalidStateException if the $entity has been alrady inserted
 	 */
-	function insert(IEntity $entity);
+	function insert(IEntity &$entity);
 
 }

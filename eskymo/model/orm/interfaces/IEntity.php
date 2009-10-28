@@ -25,6 +25,11 @@ interface IEntity
 	function getId();
 
 	/**
+	 * It sets the entity ID
+	 */
+	function setId($id);
+
+	/**
 	 * It checks if the entity can be inserted.
 	 * @return bool
 	 */

@@ -32,6 +32,10 @@ abstract class AEntity extends EskymoObject implements IEntity
 		return $this->id;
 	}
 
+	public function setId($id) {
+		$this->id = $id;
+	}
+
 	public function isReadyToUpdate() {
 		return isset($this->id);
 	}
@@ -83,7 +87,4 @@ abstract class AEntity extends EskymoObject implements IEntity
 
 	abstract protected function loadId(array $source);
 
-	protected function setId($id) {
-		$this->id = $id;
-	}
 }
