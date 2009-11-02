@@ -27,33 +27,11 @@ abstract class Worker extends EskymoObject
 	 */
 	protected function getArrayFromEntity(AEntity $entity, $annotation) {
 		$result = array();
-		// Foreach variable try to load data from a row
-		foreach($entity->getVars() AS $var) {
+		foreach ($entity->getTranslatedAttributes($annotation) AS $key => $translated) {
 			if (!isset($entity->$var)) {
 				continue;
 			}
-			$reflection = $entity->getReflection()->getProperty($var);
-			// The variables which has 'Skip' annotation will be skipped
-			if (Annotations::has($reflection, "Skip")) {
-				$toSkip = Annotations::get($reflection, $annotation);
-				if (empty($toSkip) || in_array($annotation, $toSkip)) {
-					continue;
-				}
-			}
-			// Check if there is an annotation to change the column name
-			// (Defaultly the column name is the same as variable name)
-			if (Annotations::has($reflection, $annotation)) {
-				$column = Annotations::get($reflection, $annotation);
-			}
-			else {
-				$column = $var;
-			}
-			if (is_object($entity->$var)) {
-				$result[$column] = $entity->$var;
-			}
-			else {
-				$result[$column] = trim($entity->$var);
-			}
+			$result[$translated] = $entity->$var;
 		}
 		return $result;
 	}

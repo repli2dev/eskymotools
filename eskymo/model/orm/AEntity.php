@@ -18,7 +18,27 @@
 abstract class AEntity extends EskymoObject implements IEntity
 {
 
+	/**
+	 * The entity ID
+	 *
+	 * @var int
+	 */
 	private $id;
+
+	/**
+	 * This array contains translated attributes for each subclass
+	 * and foreach annotation name
+	 *
+	 * @var array
+	 */
+	private static $translatedAttributes = array();
+
+	/**
+	 * This array contains translated ID name for each subclass
+	 *
+	 * @var array
+	 */
+	private static $translatedIds = array();
 
 	/* PUBLIC METHODS */
 	
@@ -26,6 +46,70 @@ abstract class AEntity extends EskymoObject implements IEntity
 		if(!empty($array)){
 			$this->loadDataFromArray($array);
 		}
+	}
+
+	/**
+	 * It returns translated attribute names by the specified annotation
+	 *
+	 * @param string $annotation
+	 * @return array
+	 * @throws NullPointerException if the $annotation is empty
+	 */
+	public function getTranslatedAttributes($annotation) {
+		if (empty($annotation)) {
+			throw new NullPointerException("annotation");
+		}
+		if (!isset(self::$translatedAttributes[$this->getClass()])) {
+			self::$translatedAttributes[$this->getClass()] = array();
+		}
+		if (!isset(self::$translatedAttributes[$this->getClass()][$annotation])) {
+			$translated = array();
+			foreach($this->getVars() AS $var) {
+				$reflection = $this->getReflection()->getProperty($var);
+				// The variables which has 'Skip' annotation will be skipped
+				if (Annotations::has($reflection, "Skip")) {
+					$toSkip = Annotations::get($reflection, "Skip");
+					if (empty($toSkip) || (!is_array($toSkip) && $toSkip == $annotation) || (is_array($toSkip) && in_array($annotation, $toSkip))) {
+						continue;
+					}
+				}
+				// Check if there is an annotation to change the column name
+				// (Defaultly the column name is the same as variable name)
+				if (Annotations::has($reflection, $annotation)) {
+					$translatedVar = Annotations::get($reflection, $annotation);
+				}
+				else if (Annotations::has($reflection, "Translate")) {
+					$translatedVar = Annotations::get($reflection, "Translate");
+				}
+				else {
+					$translatedVar = $var;
+				}
+				$translated[$var] = $translatedVar;
+			}
+			self::$translatedAttributes[$this->getClass()][$annotation] = $translated;
+		}
+		return self::$translatedAttributes[$this->getClass()][$annotation];
+	}
+
+	/**
+	 * It returns the key name which is used to load ID
+	 *
+	 * @return string
+	 * @throws InvalidStateException if the class has no annotation
+	 * which translates the key
+	 */
+	public function getTranslatedId() {
+		if (!isset(self::$translatedIds[$this->getClass()])) {
+			if (!Annotations::has($this->getReflection(), "Id")) {
+				throw new InvalidStateException("The annotation [Id] has to be set.");
+			}
+			$annotation = Annotations::get($this->getReflection(), "Id");
+			if (!isset($annotation->translate)) {
+				throw new InvalidStateException("The annotation [Id] has to contain parameter [translate]");
+			}
+			self::$translatedIds[$this->getClass()] = $annotation->translate;
+		}
+		return self::$translatedIds[$this->getClass()];
 	}
 
 	public function getId() {
@@ -57,26 +141,9 @@ abstract class AEntity extends EskymoObject implements IEntity
 	}
 
 	public function  loadDataFromArray(array $source) {
-		// Foreach variable try to load data from a row
-		foreach($this->getVars() AS $var) {
-			$reflection = $this->getReflection()->getProperty($var);
-			// The variables which has 'Skip' annotation will be skipped
-			if (Annotations::has($reflection, "Skip")) {
-				$toSkip = Annotations::get($reflection, "Skip");
-				if (empty($toSkip) || $toSkip == "Load") {
-					continue;
-				}
-			}
-			// Check if there is an annotation to change the column name
-			// (Defaultly the column name is the same as variable name)
-			if (Annotations::has($reflection, "Load")) {
-				$column = Annotations::get($reflection, "Load");
-			}
-			else {
-				$column = $var;
-			}
-			if (isset($source[$column])) {
-				$this->$var = $source[$column];
+		foreach ($this->getTranslatedAttributes("Load") AS $var => $translated) {
+			if (isset($source[$translated])) {
+				$this->$var = $source[$translated];
 			}
 		}
 		$this->loadId($source);
@@ -85,18 +152,15 @@ abstract class AEntity extends EskymoObject implements IEntity
 
 	/* PROTECTED METHODS */
 
+	/**
+	 * It tries to load ID from the source
+	 *
+	 * @param array $source
+	 */
 	protected function loadId(array $source) {
-		if (Annotations::has($this->getReflection(), "Id")) {
-			$annotation = Annotations::get($this->getReflection(), "Id");
-			if (!isset($annotation->translate)) {
-				throw new InvalidStateException("The annotation [Id] has to contain parameter [translate]");
-			}
-			if (isset($source[$annotation->translate])) {
-				$this->setId($source[$annotation->translate]);
-			}
-		}
-		else {
-			throw new InvalidStateException("The annotation [Id] has to be set.");
+		$key = $this->getTranslatedId();
+		if (isset($source[$key])) {
+			$this->setId($source[$key]);
 		}
 	}
 
