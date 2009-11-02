@@ -85,6 +85,19 @@ abstract class AEntity extends EskymoObject implements IEntity
 
 	/* PROTECTED METHODS */
 
-	abstract protected function loadId(array $source);
+	protected function loadId(array $source) {
+		if (Annotations::has($this->getReflection(), "Id")) {
+			$annotation = Annotations::get($this->getReflection(), "Id");
+			if (!isset($annotation->translate)) {
+				throw new InvalidStateException("The annotation [Id] has to contain parameter [translate]");
+			}
+			if (isset($source[$annotation->translate])) {
+				$this->setId($so);
+			}
+		}
+		else {
+			throw new InvalidStateException("The annotation [Id] has to be set.");
+		}
+	}
 
 }
