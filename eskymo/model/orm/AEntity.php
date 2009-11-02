@@ -92,7 +92,7 @@ abstract class AEntity extends EskymoObject implements IEntity
 				throw new InvalidStateException("The annotation [Id] has to contain parameter [translate]");
 			}
 			if (isset($source[$annotation->translate])) {
-				$this->setId($so);
+				$this->setId($source[$annotation->translate]);
 			}
 		}
 		else {
