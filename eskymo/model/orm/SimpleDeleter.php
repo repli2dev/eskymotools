@@ -18,7 +18,7 @@
 class SimpleDeleter implements IDeleter
 {
 	/**
-	 * Avaiable instances
+	 * Available instances
 	 *
 	 * @var array of SimpleDeleter
 	 */

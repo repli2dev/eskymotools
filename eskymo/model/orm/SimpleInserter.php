@@ -19,7 +19,7 @@ class SimpleInserter extends Worker implements IInserter
 {
 
 	/**
-	 * Avaiable instances
+	 * Available instances
 	 *
 	 * @var array of SimpleInserter
 	 */

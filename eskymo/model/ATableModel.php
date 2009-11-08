@@ -17,11 +17,11 @@
 abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 {
 	/**
-	 * Names of the avaiable columns of the table which is represeted by this model.
+	 * Names of the available columns of the table which is represeted by this model.
 	 *
 	 * @var array
 	 */
-	private $avaiable;
+	private $available;
 
 	/**
 	 * The primary key of the table which is represented by this model.
@@ -60,21 +60,21 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 	);
 
 	/**
-	 * It returns all avaiable columns
+	 * It returns all available columns
 	 *
 	 * This method is probably used just by methods of this abstract class.
 	 *
 	 * @return array|string Names of required columns
 	 */
-	protected function avaiableColumns() {
-		if (empty($this->avaiable)) {
-			$this->avaiable = array();
+	protected function availableColumns() {
+		if (empty($this->available)) {
+			$this->available = array();
 			$columns = $this->getTableInfo()->getColumns();
 			foreach ($columns AS $column) {
-				$this->avaiable[] = $column->getName();
+				$this->available[] = $column->getName();
 			}
 		}
-		return $this->avaiable;
+		return $this->available;
 	}
 
 	/**
@@ -204,9 +204,9 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 				throw new NullPointerException("input[". $key ."]");
 			}
 		}
-		// Use just the avaiable columns
+		// Use just the available columns
 		$toInsert = array();
-		foreach ($this->avaiableColumns() AS $key) {
+		foreach ($this->availableColumns() AS $key) {
 			if (isset($input[$key])) {
 				$toInsert[$key] = $input[$key];
 			}
@@ -339,9 +339,9 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 				throw new NullPointerException("input[$column]");
 			}
 		}
-		// Use just the avaiable columns
+		// Use just the available columns
 		$toUpdate = array();
-		foreach ($this->avaiableColumns() AS $key) {
+		foreach ($this->availableColumns() AS $key) {
 			if (isset($input[$key])) {
 				$toUpdate[$key] = $input[$key];
 			}

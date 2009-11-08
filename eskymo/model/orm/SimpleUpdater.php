@@ -19,7 +19,7 @@ class SimpleUpdater extends Worker implements IUpdater
 {
 
 	/**
-	 * Avaiable instances
+	 * Available instances
 	 *
 	 * @var array of SimpleUpdater
 	 */

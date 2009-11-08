@@ -4,7 +4,7 @@
  * which represents model on the table in database.
  *
  * All classes which implement this interface should declare
- * static method 'getTable()' and declare all avaiable columns in constants.
+ * static method 'getTable()' and declare all available columns in constants.
  *
  * The names of columns which the MySQL table of the model contains should
  * be declared by constants started by "DATA_"
