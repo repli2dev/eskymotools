@@ -8,6 +8,25 @@ class EntityTest extends EskymoTestCase {
 		$this->factory = new TestEntityFactory();
 	}
 
+	public function testGetIdName() {
+		$this->assertEquals("translated_id", $this->factory->createEmpty()->getIdName());
+	}
+
+	public function testGetAttributeNames() {
+		$entity = $this->factory->createEmpty();
+		$attributes = $entity->getAttributeNames();
+		$this->assertEquals(1, sizeof($attributes));
+		$this->assertEquals("name", ExtraArray::firstValue($attributes));
+
+		$attributes = $entity->getAttributeNames("Super");
+		$this->assertEquals(1, sizeof($attributes));
+		$this->assertEquals("super_name", ExtraArray::firstValue($attributes));
+
+		$attributes = $entity->getAttributeNames("Never");
+		$this->assertEquals(1, sizeof($attributes));
+		$this->assertEquals("translated_name", ExtraArray::firstValue($attributes));
+	}
+
 	public function testLifeCycle() {
 		$entity = $this->factory->createEmpty();
 		$this->assertEquals(IEntity::STATE_NEW, $entity->getState());

@@ -59,6 +59,14 @@ interface IEntity
 	function delete();
 
 	/**
+	 * It returns translated attribute names by the specified annotation
+	 *
+	 * @param string $annotation
+	 * @return array
+	 */
+	function getAttributeNames($annotation = NULL);
+
+	/**
 	 * It returns data whose name is translated by specified annotation.
 	 * The modifier says if we want to get modified, not modified or all data.
 	 *
@@ -72,6 +80,13 @@ interface IEntity
 	 * @return int
 	 */
 	function getId();
+
+	/**
+	 * It returns ID key name
+	 *
+	 * @return string
+	 */
+	function getIdName();
 
 	/**
 	 * It retuturns the entity state

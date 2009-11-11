@@ -96,7 +96,7 @@ class AEntity extends EskymoObject implements IEntity{
 		}
 		$result = array();
 		if (!empty($annotation)) {
-			foreach ($this->getTranslatedAttributes($annotation) AS $var => $translated) {
+			foreach ($this->getAttributeNames($annotation) AS $var => $translated) {
 				if (!isset($this->$var)) {
 					continue;
 				}
@@ -149,7 +149,7 @@ class AEntity extends EskymoObject implements IEntity{
 			throw new InvalidStateException("The entity is not in state [NEW]. It can't be loaded from array.");
 		}
 		if (!empty($annotation)) {
-			foreach ($this->getTranslatedAttributes($annotation) AS $var => $translated) {
+			foreach ($this->getAttributeNames($annotation) AS $var => $translated) {
 				if (isset($source[$translated])) {
 					$this->$var = $source[$translated];
 				}
@@ -174,7 +174,7 @@ class AEntity extends EskymoObject implements IEntity{
 	 * @param array $source
 	 */
 	protected function loadId(array $source) {
-		$key = $this->getTranslatedId();
+		$key = $this->getIdName();
 		if (isset($source[$key])) {
 			$this->setId($source[$key]);
 		}
@@ -221,10 +221,7 @@ class AEntity extends EskymoObject implements IEntity{
 	 * @return array
 	 * @throws NullPointerException if the $annotation is empty
 	 */
-	private function getTranslatedAttributes($annotation) {
-		if (empty($annotation)) {
-			throw new NullPointerException("annotation");
-		}
+	public function getAttributeNames($annotation = NULL) {
 		if (!isset(self::$translatedAttributes[$this->getClass()])) {
 			self::$translatedAttributes[$this->getClass()] = array();
 		}
@@ -233,7 +230,7 @@ class AEntity extends EskymoObject implements IEntity{
 			foreach($this->getVars() AS $var) {
 				$reflection = $this->getReflection()->getProperty($var);
 				// The variables which has 'Skip' annotation will be skipped
-				if (Annotations::has($reflection, "Skip")) {
+				if (!empty($annotation) && Annotations::has($reflection, "Skip")) {
 					$toSkip = Annotations::get($reflection, "Skip");
 					if (empty($toSkip) || (!is_array($toSkip) && $toSkip == $annotation) || (is_array($toSkip) && in_array($annotation, $toSkip))) {
 						continue;
@@ -244,7 +241,7 @@ class AEntity extends EskymoObject implements IEntity{
 				if (Annotations::has($reflection, $annotation)) {
 					$translatedVar = Annotations::get($reflection, $annotation);
 				}
-				else if (Annotations::has($reflection, "Translate")) {
+				else if (!empty($annotation) && Annotations::has($reflection, "Translate")) {
 					$translatedVar = Annotations::get($reflection, "Translate");
 				}
 				else {
@@ -264,7 +261,7 @@ class AEntity extends EskymoObject implements IEntity{
 	 * @throws InvalidStateException if the class has no annotation
 	 * which translates the key
 	 */
-	private function getTranslatedId() {
+	public function getIdName() {
 		if (!isset(self::$translatedIds[$this->getClass()])) {
 			if (!Annotations::has($this->getReflection(), "Id")) {
 				throw new InvalidStateException("The annotation [Id] has to be set.");
