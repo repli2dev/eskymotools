@@ -24,7 +24,7 @@ class EskymoObject extends Object
 	 * @return array Variable names
 	 */
 	public function getVars() {
-		return array_keys(get_class_vars($this->getClass()));
+		return array_keys(get_object_vars($this));
 	}
 
 	/**

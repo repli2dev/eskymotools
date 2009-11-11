@@ -13,11 +13,11 @@ class EntityTest extends EskymoTestCase {
 		$this->assertEquals(IEntity::STATE_NEW, $entity->getState());
 		$entity->persist();
 		$this->assertEquals(IEntity::STATE_PERSISTED, $entity->getState());
-		$entity->setName("aaa");
+		$entity->name = "aaa";
 		$this->assertEquals(IEntity::STATE_MODIFIED, $entity->getState());
 		$entity->persist();
 		$this->assertEquals(IEntity::STATE_PERSISTED, $entity->getState());
-		$entity->setName("aaa");
+		$entity->name = "aaa";
 		$this->assertEquals(IEntity::STATE_PERSISTED, $entity->getState());
 		$entity->delete();
 		$this->assertEquals(IEntity::STATE_DELETED, $entity->getState());
@@ -74,6 +74,18 @@ class EntityTest extends EskymoTestCase {
 		$this->assertEquals("translated_name", $entity->name);
 	}
 
+	/** @TestThrow(MemberAccessException) */
+	public function testNotDefinedVarRead() {
+		$entity = $this->factory->createEmpty();
+		$a = $entity->notdefined;
+	}
+
+	/** @TestThrow(MemberAccessException) */
+	public function testNotDefinedVarWrite() {
+		$entity = $this->factory->createEmpty();
+		$entity->notdefined = "aaa";
+	}
+
 	public function testPersistId() {
 		$entity = $this->factory->createEmpty()->persist();
 		$this->assertEquals(1, $entity->getId());
@@ -120,11 +132,10 @@ class TestEntityFactory extends AEntityFactory
 /** @Id(translate=translated_id) */
 class TestEntity extends AEntity
 {
-
 	/**
 	 * @Translate(translated_name)
-	 * @Super(super_name)
+	 * @Super(super_name))
 	 */
-	public $name;
+	protected $name;
 
 }

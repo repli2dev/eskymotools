@@ -57,22 +57,21 @@ class AEntity extends EskymoObject implements IEntity{
 		$this->setState(IEntity::STATE_NEW);
 	}
 
-	public function __call($name, $args) {
-		if (String::startsWith($name, "set")) {
-			if (sizeof($args) != 1) {
-				throw new InvalidArgumentException(
-					"The methods [$name] has to be
-					 called with one argument. It has been called with " .
-					 sizeof($args) . " arguments."
-				);
-			}
-			$column = String::lower(substr($name, 3, strlen($name)));
-			if ($this->$column != $args[0]) {
-				$this->setValue($column, $args[0]);
-			}
- 		}
+	public function & __get($name) {
+		if (in_array($name, $this->getVars())) {
+			return $this->$name;
+		}
 		else {
-			parent::__call($name, $args);
+			return parent::__get($name);
+		}
+	}
+
+	public function __set($name, $value) {
+		if (in_array($name, $this->getVars())) {
+			$this->setValue($name, $value);
+		}
+		else {
+			parent::__set($name, $value);
 		}
 	}
 
@@ -116,6 +115,9 @@ class AEntity extends EskymoObject implements IEntity{
 	}
 
 	public function getId() {
+		if ($this->getState() != IEntity::STATE_NEW && empty($this->id)) {
+			throw new InvalidStateException("The entity has no ID.");
+		}
 		return $this->id;
 	}
 
@@ -193,8 +195,10 @@ class AEntity extends EskymoObject implements IEntity{
 	}
 
 	protected final function setValue($column, $value) {
-		$this->$column = $value;
-		$this->addModifiedColumn($column);
+		if ($this->$column != $value) {
+			$this->$column = $value;
+			$this->addModifiedColumn($column);
+		}
 	}
 
 	/* PRIVATE METHODS */
