@@ -15,7 +15,7 @@
  * @author		Jan Drabek
  * @version		$Id$
  */
-class SimpleUpdater extends Worker implements IUpdater
+class SimpleUpdater implements IUpdater
 {
 
 	/**
@@ -60,11 +60,8 @@ class SimpleUpdater extends Worker implements IUpdater
 	}
 
 	public function update(IEntity $entity) {
-		if (!$entity->isReadyToUpdate()) {
-			throw new InvalidArgumentException("The entity is not ready to be updated.");
-		}
 		return SimpleTableModel::createTableModel($this->table)
-			->update($this->getArrayFromEntity($entity, "Save"));
+			->update($entity->getData("Save"));
 	}
 
 }

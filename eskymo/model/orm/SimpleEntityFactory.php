@@ -41,6 +41,12 @@ class SimpleEntityFactory extends AEntityFactory
 		$this->entityName = $name;
 	}
 
+	/** @return IEntity */
+	public function createEmpty() {
+		$entity = $this->getThisEntityName() . "Entity";
+		return new $entity($this);
+	}
+
 	/**
 	 * It creates a new instance of IEntityFactory
 	 *
@@ -57,6 +63,55 @@ class SimpleEntityFactory extends AEntityFactory
 			self::$instances[$name] = new SimpleEntityFactory($name);
 		}
 		return self::$instances[$name];
+	}
+
+	/* PROTECTED METHODS */
+
+	/** @return IInserter */
+	protected function createInserter() {
+		$inserter = $this->getThisEntityName().'Inserter';
+		if (class_exists($inserter)) {
+			return $this->getInstanceOfClassByName($inserter);
+		}
+		else {
+			return SimpleInserter::createInserter(String::lower($this->getThisEntityName()));
+		}
+	}
+
+	/** @return IUpdater */
+	protected function createUpdater(){
+		$updater = $this->getThisEntityName().'Updater';
+		if (class_exists($updater)) {
+			return $this->getInstanceOfClassByName($updater);
+		}
+		else {
+			return SimpleUpdater::createUpdater(String::lower($this->getThisEntityName()));
+		}
+	}
+
+	/** @return ISelector */
+	protected function createSelector(){
+		return $this->getInstanceOfClassByName($this->getThisEntityName().'Selector');
+	}
+
+	/** @return IDeleter */
+	protected function createDeleter() {
+		$deleter = $this->getThisEntityName().'Deleter';
+		if (class_exists($deleter)) {
+			return $this->getInstanceOfClassByName($deleter);
+		}
+		else {
+			return SimpleDeleter::createDeleter(String::lower($this->getThisEntityName()));
+		}
+	}
+
+	/** @return string */
+	protected function getThisEntityName(){
+		return substr(get_class($this), 0, -7);
+	}
+
+	private function getInstanceOfClassByName($name){
+		return new $name;
 	}
 
 	protected function getThisEntityName(){

@@ -15,7 +15,7 @@
  * @author		Jan Drabek
  * @version		$Id$
  */
-interface IEntityFactory
+interface IEntityFactory extends IInsertable, IUpdateable, ISelectable, IDeletable
 {
 
 	/**

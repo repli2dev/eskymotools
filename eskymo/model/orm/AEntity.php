@@ -15,15 +15,11 @@
  * @author		Jan Drabek
  * @version		$Id$
  */
-abstract class AEntity extends EskymoObject implements IEntity
-{
+class AEntity extends EskymoObject implements IEntity{
 
-	/**
-	 * The entity ID
-	 *
-	 * @var int
-	 */
-	private $id;
+	// TODO: State [MODIFIED] is not implemented correctly
+
+	/* STATIC ATTRIBUTES */
 
 	/**
 	 * This array contains translated attributes for each subclass
@@ -40,12 +36,178 @@ abstract class AEntity extends EskymoObject implements IEntity
 	 */
 	private static $translatedIds = array();
 
+	/* COMMON PRIVATE ATTRIBUTES */
+
+	/** @var IEntityFactory */
+	private $factory;
+
+	/** @var int */
+	private $id;
+
+	/** @var array */
+	private $modified = array();
+
+	/** @var int */
+	private $state;
+
 	/* PUBLIC METHODS */
-	
-	public function __construct(array $array = NULL){
-		if(!empty($array)){
-			$this->loadDataFromArray($array);
+
+	public function  __construct(IEntityFactory &$factory) {
+		$this->factory = $factory;
+		$this->setState(IEntity::STATE_NEW);
+	}
+
+	public function __call($name, $args) {
+		if (String::startsWith($name, "set")) {
+			if (sizeof($args) != 1) {
+				throw new InvalidArgumentException(
+					"The methods [$name] has to be
+					 called with one argument. It has been called with " .
+					 sizeof($args) . " arguments."
+				);
+			}
+			$column = String::lower(substr($name, 3, strlen($name)));
+			if ($this->$column != $args[0]) {
+				$this->setValue($column, $args[0]);
+			}
+ 		}
+		else {
+			parent::__call($name, $args);
 		}
+	}
+
+	public final function delete() {
+		if ($this->getId() == NULL) {
+			throw new InvalidStateException("The entity can not be deleted.");
+		}
+		$this->factory->getDeleter()->delete($this->getId());
+		$this->setState(IEntity::STATE_DELETED);
+	}
+
+	/**
+	 * It returns data from the entity
+	 *
+	 * @param string $annotation
+	 * @param string $modifier Only IEntity::DATA_ALL is implemented
+	 * @return array
+	 */
+	public final function getData($annotation = NULL, $modifier = self::DATA_ALL) {
+		if ($modifier != IEntity::DATA_ALL) {
+			throw new NotSupportedException("Only the modifier [ALL] is supported.");
+		}
+		$result = array();
+		if (!empty($annotation)) {
+			foreach ($this->getTranslatedAttributes($annotation) AS $var => $translated) {
+				if (!isset($this->$var)) {
+					continue;
+				}
+				$result[$translated] = $this->$var;
+			}
+		}
+		else {
+			foreach($this->getVars() AS $var) {
+				if (!isset($this->$var)) {
+					continue;
+				}
+				$result[$var] = $this->$var;
+			}
+		}
+		return $result;
+	}
+
+	public function getId() {
+		return $this->id;
+	}
+
+	public final function getState() {
+		return $this->state;
+	}
+
+	public final function persist() {
+		switch($this->getState()) {
+			case IEntity::STATE_NEW:
+				$id = $this->factory->getInserter()->insert($this);
+				$this->setId($id);
+				break;
+			case IEntity::STATE_MODIFIED:
+				$this->factory->getUpdater()->update($this);
+				break;
+			case IEntity::STATE_PERSISTED:
+				break;
+			default:
+				throw new InvalidStateException("The entity can not be persisted.");
+		}
+		$this->clearModifiedColumns();
+		$this->setState(IEntity::STATE_PERSISTED);
+		return $this;
+	}
+
+	public final function loadDataFromArray(array $source, $annotation = NULL) {
+		if ($this->getState() != IEntity::STATE_NEW) {
+			throw new InvalidStateException("The entity is not in state [NEW]. It can't be loaded from array.");
+		}
+		if (!empty($annotation)) {
+			foreach ($this->getTranslatedAttributes($annotation) AS $var => $translated) {
+				if (isset($source[$translated])) {
+					$this->$var = $source[$translated];
+				}
+			}
+		}
+		else {
+			foreach ($source AS $key => $value) {
+				if (isset($this->$key)) {
+					$this->$key = $value;
+				}
+			}
+		}
+		$this->loadId($source);
+		return $this;
+	}
+
+	/* PROTECTED METHODS */
+
+	/**
+	 * It tries to load ID from the source
+	 *
+	 * @param array $source
+	 */
+	protected function loadId(array $source) {
+		$key = $this->getTranslatedId();
+		if (isset($source[$key])) {
+			$this->setId($source[$key]);
+		}
+	}
+
+	protected final function setId($id) {
+		$this->id = $id;
+		if ($this->state == IEntity::STATE_NEW) {
+			$this->setState(IEntity::STATE_PERSISTED);
+		}
+	}
+
+	protected final function setState($state) {
+		if (empty($state)) {
+			throw new NullPointerException("state");
+		}
+		$this->state = $state;
+	}
+
+	protected final function setValue($column, $value) {
+		$this->$column = $value;
+		$this->addModifiedColumn($column);
+	}
+
+	/* PRIVATE METHODS */
+
+	private function addModifiedColumn($column) {
+		$this->modified[$column] = TRUE;
+		if ($this->getState() == IEntity::STATE_PERSISTED) {
+			$this->setState(IEntity::STATE_MODIFIED);
+		}
+	}
+
+	private function clearModifiedColumns() {
+		$this->modified = array();
 	}
 
 	/**
@@ -55,7 +217,7 @@ abstract class AEntity extends EskymoObject implements IEntity
 	 * @return array
 	 * @throws NullPointerException if the $annotation is empty
 	 */
-	public function getTranslatedAttributes($annotation) {
+	private function getTranslatedAttributes($annotation) {
 		if (empty($annotation)) {
 			throw new NullPointerException("annotation");
 		}
@@ -98,7 +260,7 @@ abstract class AEntity extends EskymoObject implements IEntity
 	 * @throws InvalidStateException if the class has no annotation
 	 * which translates the key
 	 */
-	public function getTranslatedId() {
+	private function getTranslatedId() {
 		if (!isset(self::$translatedIds[$this->getClass()])) {
 			if (!Annotations::has($this->getReflection(), "Id")) {
 				throw new InvalidStateException("The annotation [Id] has to be set.");
@@ -111,57 +273,4 @@ abstract class AEntity extends EskymoObject implements IEntity
 		}
 		return self::$translatedIds[$this->getClass()];
 	}
-
-	public function getId() {
-		return $this->id;
-	}
-
-	public function setId($id) {
-		$this->id = $id;
-	}
-
-	public function isReadyToUpdate() {
-		return isset($this->id);
-	}
-
-	public function isReadyToInsert() {
-		// Check if the id is not set.
-		if (isset($this->id)) {
-			return FALSE;
-		}
-		// Check if all required columns are set
-		foreach ($this->getVars() AS $var) {
-			$reflection = $this->getReflection()->getProperty($var);
-			if (Annotations::has($reflection, "Required") && !isset($this->$var)) {
-				return FALSE;
-			}
-		}
-		// If all passed, the entity is ready to be inserted
-		return TRUE;
-	}
-
-	public function  loadDataFromArray(array $source) {
-		foreach ($this->getTranslatedAttributes("Load") AS $var => $translated) {
-			if (isset($source[$translated])) {
-				$this->$var = $source[$translated];
-			}
-		}
-		$this->loadId($source);
-		return $this;
-	}
-
-	/* PROTECTED METHODS */
-
-	/**
-	 * It tries to load ID from the source
-	 *
-	 * @param array $source
-	 */
-	protected function loadId(array $source) {
-		$key = $this->getTranslatedId();
-		if (isset($source[$key])) {
-			$this->setId($source[$key]);
-		}
-	}
-
 }

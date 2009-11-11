@@ -15,7 +15,7 @@
  * @author		Jan Drabek
  * @version		$Id$
  */
-class SimpleInserter extends Worker implements IInserter
+class SimpleInserter implements IInserter
 {
 
 	/**
@@ -60,14 +60,8 @@ class SimpleInserter extends Worker implements IInserter
 	}
 
 	public function insert(IEntity &$entity) {
-		if (!$entity->isReadyToInsert()) {
-			throw new InvalidArgumentException("The entity is not ready to be inserted.");
-		}
 		$id = SimpleTableModel::createTableModel($this->table)
-			->insert($this->getArrayFromEntity($entity, "Save"));
-		if(!empty($id) && $id != -1){
-			$entity->setId($id);
-		}
+			->insert($entity->getData("Save"));
 		return $id;
 	}
 }

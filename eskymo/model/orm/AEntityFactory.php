@@ -15,7 +15,7 @@
  * @author		Jan Drabek
  * @version		$Id$
  */
-abstract class AEntityFactory implements IEntityFactory, IInsertable, IUpdateable, ISelectable, IDeletable
+abstract class AEntityFactory implements IEntityFactory
 {
 
 	/** @var IInserter */
@@ -30,61 +30,9 @@ abstract class AEntityFactory implements IEntityFactory, IInsertable, IUpdateabl
 	/** @var IDeleter */
 	private $deleter;
 
-	/** @return IInserter */
-	protected function createInserter() {
-		$inserter = $this->getThisEntityName().'Inserter';
-		if (class_exists($inserter)) {
-			return $this->getInstanceOfClassByName($inserter);
-		}
-		else {
-			return SimpleInserter::createInserter(String::lower($this->getThisEntityName()));
-		}
-	}
-
-	/** @return IUpdater */
-	protected function createUpdater(){
-		$updater = $this->getThisEntityName().'Updater';
-		if (class_exists($updater)) {
-			return $this->getInstanceOfClassByName($updater);
-		}
-		else {
-			return SimpleUpdater::createUpdater(String::lower($this->getThisEntityName()));
-		}
-	}
-	
-	/** @return ISelector */
-	protected function createSelector(){
-		return $this->getInstanceOfClassByName($this->getThisEntityName().'Selector');
-	}
-	
-	/** @return IDeleter */
-	protected function createDeleter() {
-		$deleter = $this->getThisEntityName().'Deleter';
-		if (class_exists($deleter)) {
-			return $this->getInstanceOfClassByName($deleter);
-		}
-		else {
-			return SimpleDeleter::createDeleter(String::lower($this->getThisEntityName()));
-		}
-	}
-
-	/** @return string */
-	protected function getThisEntityName(){
-		return substr(get_class($this), 0, -7);
-	}
-
-	private function getInstanceOfClassByName($name){
-		return new $name;
-	}
-
-	/** @return IEntity */
-	public function createEmpty() {
-		return $this->getInstanceOfClassByName($this->getThisEntityName() . "Entity");
-	}
-
 	public function fetchAndCreate(IDataSource $source) {
 		$row = $source->fetch();
-		return empty($row) ? NULL : $this->createEmpty()->loadDataFromArray($row->getArrayCopy());
+		return empty($row) ? NULL : $this->createEmpty()->loadDataFromArray($row->getArrayCopy(), "Load");
 	}
 
 	public function fetchAndCreateAll(IDataSource $source){
@@ -122,5 +70,19 @@ abstract class AEntityFactory implements IEntityFactory, IInsertable, IUpdateabl
 		}
 		return $this->deleter;
 	}
+
+	/* PROTECTED METHODS */
+
+	/** @return IDeleter */
+	abstract protected function createDeleter();
+
+	/** @return IInserter */
+	abstract protected function createInserter();
+
+	/** @return ISelector */
+	abstract protected function createSelector();
+
+	/** @return IUpdater */
+	abstract protected function createUpdater();
 
 }

@@ -8,32 +8,32 @@ define("TEST_DIR", dirname(__FILE__) . "/temp");
 class FileTest extends EskymoTestCase {
 
 	/** @Skip */
-	protected function testAbsolutePath() {}
+	public function testAbsolutePath() {}
 
 	/** @TestThrow(NullPointerException) */
-	protected function testConstructorEmpty() {
+	public function testConstructorEmpty() {
 		$file = new File("");
 	}
 
-	protected function testCreateNewFile() {
+	public function testCreateNewFile() {
 		$file = new File(TEST_DIR . "/temporary_file");
 		$file->createNewFile();
 		$this->assertTrue($file->exists());
 	}
 
-	protected function testDelete() {
+	public function testDelete() {
 		$file = new File(TEST_DIR . "/temporary_file");
 		$file->createNewFile();
 		$file->delete();
 		$this->assertFalse($file->exists());
 	}
 
-	protected function testExtension() {
+	public function testExtension() {
 		$file = new File(TEST_DIR . "/temporary_file.ahdcs.txt");
 		$this->assertEquals("txt", $file->getExtension());
 	}
 
-	protected function testIsDirectory() {
+	public function testIsDirectory() {
 		$dir = new File(TEST_DIR);
 		$this->assertTrue($dir->isDirectory());
 		$file = new File(TEST_DIR . "/temporary_file");
@@ -41,7 +41,7 @@ class FileTest extends EskymoTestCase {
 		$this->assertFalse($file->isDirectory());
 	}
 
-	protected function testIsFile() {
+	public function testIsFile() {
 		$file = new File(TEST_DIR . "/temporary_file");
 		$file->createNewFile();
 		$this->assertTrue($file->isFile());
@@ -49,7 +49,7 @@ class FileTest extends EskymoTestCase {
 		$this->assertFalse($dir->isFile());
 	}
 
-	protected function testLastModified() {		
+	public function testLastModified() {
 		$file = new File(TEST_DIR . "/temporary_file.ahdcs.txt");
 		if ($file->exists()) {
 			$file->delete();
@@ -60,28 +60,28 @@ class FileTest extends EskymoTestCase {
 	}
 
 	/** @Skip */
-	protected function testListFiles() {}
+	public function testListFiles() {}
 
 	/** @Skip */
-	protected function testListPaths() {}
+	public function testListPaths() {}
 
 	/** @Skip */
-	protected function testMkdir() {}
+	public function testMkdir() {}
 
 	/** @Skip */
-	protected function testMkdirs() {}
+	public function testMkdirs() {}
 
-	protected function testName() {
+	public function testName() {
 		$file = new File(TEST_DIR . "/temporary file");
 		$this->assertEquals("temporary file", $file->getName());
 	}
 
-	protected function testPath() {
+	public function testPath() {
 		$file = new File("/tmp/aaa/");
 		$this->assertEquals("/tmp/aaa", $file->getPath());
 	}
 
-	protected function testParent() {
+	public function testParent() {
 		$file = new File("/tmp/aaa");
 		$this->assertEquals("/tmp", $file->getParentFile()->getPath());
 	}
