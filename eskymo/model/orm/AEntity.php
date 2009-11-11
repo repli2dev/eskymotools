@@ -239,7 +239,10 @@ class AEntity extends EskymoObject implements IEntity{
 				// Check if there is an annotation to change the column name
 				// (Defaultly the column name is the same as variable name)
 				if (Annotations::has($reflection, $annotation)) {
-					$translatedVar = Annotations::get($reflection, $annotation);
+					$description = Annotations::get($reflection, $annotation);
+					if (isset($description->translate)) {
+						$translatedVar = $description->translate;
+					}
 				}
 				else if (!empty($annotation) && Annotations::has($reflection, "Translate")) {
 					$translatedVar = Annotations::get($reflection, "Translate");

@@ -153,7 +153,7 @@ class TestEntity extends AEntity
 {
 	/**
 	 * @Translate(translated_name)
-	 * @Super(super_name))
+	 * @Super(translate=super_name)
 	 */
 	protected $name;
 
