@@ -17,8 +17,6 @@
  */
 class AEntity extends EskymoObject implements IEntity{
 
-	// TODO: State [MODIFIED] is not implemented correctly
-
 	/* STATIC ATTRIBUTES */
 
 	/**
@@ -84,6 +82,48 @@ class AEntity extends EskymoObject implements IEntity{
 	}
 
 	/**
+	 * It returns translated attribute names by the specified annotation
+	 *
+	 * @param string $annotation
+	 * @return array
+	 * @throws NullPointerException if the $annotation is empty
+	 */
+	public function getAttributeNames($annotation = NULL) {
+		if (!isset(self::$translatedAttributes[$this->getClass()])) {
+			self::$translatedAttributes[$this->getClass()] = array();
+		}
+		if (!isset(self::$translatedAttributes[$this->getClass()][$annotation])) {
+			$translated = array();
+			foreach($this->getVars() AS $var) {
+				if (!empty($annotation)) {
+					$toSkip			= $this->getAnnotation("Skip", $var);
+					$translatedVar	= $this->getAnnotation("Translate", $var);
+					$description	= $this->getAnnotation($annotation, $var);
+				}
+				// The variables which has 'Skip' annotation will be skipped
+				if (!empty($toSkip)) {
+					if ((!is_array($toSkip) && $toSkip == $annotation) || (is_array($toSkip) && in_array($annotation, $toSkip))) {
+						continue;
+					}
+				}
+				// Check if there is an annotation to change the column name
+				// (Defaultly the column name is the same as variable name)
+				if (!empty($description)) {
+					if (isset($description->translate)) {
+						$translatedVar = $description->translate;
+					}
+				}
+				else if(empty($translatedVar)) {
+					$translatedVar = $var;
+				}
+				$translated[$var] = $translatedVar;
+			}
+			self::$translatedAttributes[$this->getClass()][$annotation] = $translated;
+		}
+		return self::$translatedAttributes[$this->getClass()][$annotation];
+	}
+
+	/**
 	 * It returns data from the entity
 	 *
 	 * @param string $annotation
@@ -119,6 +159,27 @@ class AEntity extends EskymoObject implements IEntity{
 			throw new InvalidStateException("The entity has no ID.");
 		}
 		return $this->id;
+	}
+
+	/**
+	 * It returns the key name which is used to load ID
+	 *
+	 * @return string
+	 * @throws InvalidStateException if the class has no annotation
+	 * which translates the key
+	 */
+	public function getIdName() {
+		if (!isset(self::$translatedIds[$this->getClass()])) {
+			$description = $this->getAnnotation("Id");
+			if (empty($description)) {
+				throw new InvalidStateException("The annotation [Id] has to be set.");
+			}
+			if (!isset($description->translate)) {
+				throw new InvalidStateException("The annotation [Id] has to contain parameter [translate]");
+			}
+			self::$translatedIds[$this->getClass()] = $description->translate;
+		}
+		return self::$translatedIds[$this->getClass()];
 	}
 
 	public final function getState() {
@@ -212,69 +273,5 @@ class AEntity extends EskymoObject implements IEntity{
 
 	private function clearModifiedColumns() {
 		$this->modified = array();
-	}
-
-	/**
-	 * It returns translated attribute names by the specified annotation
-	 *
-	 * @param string $annotation
-	 * @return array
-	 * @throws NullPointerException if the $annotation is empty
-	 */
-	public function getAttributeNames($annotation = NULL) {
-		if (!isset(self::$translatedAttributes[$this->getClass()])) {
-			self::$translatedAttributes[$this->getClass()] = array();
-		}
-		if (!isset(self::$translatedAttributes[$this->getClass()][$annotation])) {
-			$translated = array();
-			foreach($this->getVars() AS $var) {
-				$reflection = $this->getReflection()->getProperty($var);
-				// The variables which has 'Skip' annotation will be skipped
-				if (!empty($annotation) && Annotations::has($reflection, "Skip")) {
-					$toSkip = Annotations::get($reflection, "Skip");
-					if (empty($toSkip) || (!is_array($toSkip) && $toSkip == $annotation) || (is_array($toSkip) && in_array($annotation, $toSkip))) {
-						continue;
-					}
-				}
-				// Check if there is an annotation to change the column name
-				// (Defaultly the column name is the same as variable name)
-				if (Annotations::has($reflection, $annotation)) {
-					$description = Annotations::get($reflection, $annotation);
-					if (isset($description->translate)) {
-						$translatedVar = $description->translate;
-					}
-				}
-				else if (!empty($annotation) && Annotations::has($reflection, "Translate")) {
-					$translatedVar = Annotations::get($reflection, "Translate");
-				}
-				else {
-					$translatedVar = $var;
-				}
-				$translated[$var] = $translatedVar;
-			}
-			self::$translatedAttributes[$this->getClass()][$annotation] = $translated;
-		}
-		return self::$translatedAttributes[$this->getClass()][$annotation];
-	}
-
-	/**
-	 * It returns the key name which is used to load ID
-	 *
-	 * @return string
-	 * @throws InvalidStateException if the class has no annotation
-	 * which translates the key
-	 */
-	public function getIdName() {
-		if (!isset(self::$translatedIds[$this->getClass()])) {
-			if (!Annotations::has($this->getReflection(), "Id")) {
-				throw new InvalidStateException("The annotation [Id] has to be set.");
-			}
-			$annotation = Annotations::get($this->getReflection(), "Id");
-			if (!isset($annotation->translate)) {
-				throw new InvalidStateException("The annotation [Id] has to contain parameter [translate]");
-			}
-			self::$translatedIds[$this->getClass()] = $annotation->translate;
-		}
-		return self::$translatedIds[$this->getClass()];
 	}
 }

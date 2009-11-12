@@ -7,7 +7,31 @@
 class EskymoObject extends Object
 {
 
-	//public function  __construct() {}
+	/**
+	 * It returns the class annotation value. If the attribute is set,
+	 * the attribute annotation value will be returned.
+	 *
+	 * @param string $annotation
+	 * @param string $attribute
+	 */
+	function getAnnotation($annotation, $attribute = NULL) {
+		if (empty($annotation)) {
+			throw new NullPointerException("annotation");
+		}
+		if (empty($attribute)) {
+			$reflection = $this->getReflection();
+		}
+		else {
+			$reflection = $this->getReflection()->getProperty($attribute);
+		}
+		if (!Annotations::has($reflection, $annotation)) {
+			return NULL;
+		}
+		else {
+			return Annotations::get($reflection, $annotation);
+		}
+	}
+
 
 	/**
 	 * It returns object methods
