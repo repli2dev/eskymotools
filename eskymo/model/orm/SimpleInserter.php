@@ -60,6 +60,9 @@ class SimpleInserter implements IInserter
 	}
 
 	public function insert(IEntity &$entity) {
+		if ($entity->getState() != IEntity::STATE_NEW) {
+			throw new InvalidArgumentException("The entity can not be inserted because it is not in state [NEW].");
+		}
 		$id = SimpleTableModel::createTableModel($this->table)
 			->insert($entity->getData("Save"));
 		return $id;

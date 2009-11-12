@@ -60,6 +60,9 @@ class SimpleUpdater implements IUpdater
 	}
 
 	public function update(IEntity $entity) {
+		if ($entity->getState() != IEntity::STATE_MODIFIED) {
+			throw new InvalidArgumentException("The entity can not be inserted because it is not in state [MODIFIED].");
+		}
 		return SimpleTableModel::createTableModel($this->table)
 			->update($entity->getData("Save"));
 	}
