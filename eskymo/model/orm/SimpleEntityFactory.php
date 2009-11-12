@@ -106,9 +106,6 @@ class SimpleEntityFactory extends AEntityFactory
 	}
 
 	/** @return string */
-	protected function getThisEntityName(){
-		return substr(get_class($this), 0, -7);
-	}
 
 	private function getInstanceOfClassByName($name){
 		return new $name;
