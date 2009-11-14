@@ -27,9 +27,7 @@ class EntityGenerator
 		echo $this->getTemplate()->__toString();
 	}
 
-	/* PRIVATE METHODS */
-
-	/** @return Template */
+	/* PRIVATE METHODS */	
 
 	private function getAttribute(DibiColumnInfo $column) {
 		$translated = ExtraString::lowerFirst(
@@ -81,6 +79,7 @@ class EntityGenerator
 		return $primaryKey->getName();
 	}
 
+	/** @return Template */
 	private function getTemplate() {
 		if (empty($this->template)) {
 			$this->template = new Template();
