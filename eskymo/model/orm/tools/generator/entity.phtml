@@ -1,0 +1,24 @@
+<?php echo "<?php\n" ?>
+/**
+ * @Id(translate={$translatedId})
+ */
+class {$entityName} extends AEntity
+{
+{foreach $attributes AS $attribute}
+	{if !empty($attribute["translate"]) || !empty($attribute["rules"]) || !empty($attribute["form"])}
+	/**
+	 {if !empty($attribute["translate"])}
+	 * @Translate({$attribute["translate"]})
+	 {/if}
+	 {foreach $attribute["rules"] AS $rule}
+	 * @Rule(type={$rule["type"]})
+	 {/foreach}
+	 {if !empty($attribute["form"])}
+	 * @Form({if !empty($attribute["form"]["withResource"])}withResource={$attribute["form"]["withResource"]}{/if})
+	 {/if}
+	 */
+	{/if}
+	protected {$attribute["name"]};
+
+{/foreach}
+}
