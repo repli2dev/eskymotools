@@ -3,7 +3,7 @@
 class EntityGenerator
 {
 
-	/** @var DibiConnection		*/
+	/** @var DibiConnection	*/
 	private $connection;
 
 	/** @var Template */
