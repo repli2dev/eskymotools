@@ -14,5 +14,10 @@ $loader->register();
 
 $arguments = Console::loadArguments($argv);
 
+if (empty($arguments["table"])) {
+	echo "The table name is not given.\n";
+	die;
+}
+
 $generator = new EntityGenerator(dibi::connect($arguments));
-echo $generator->generate("opinion");
+echo $generator->generate($arguments["table"]);
