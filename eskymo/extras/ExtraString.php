@@ -21,6 +21,21 @@ class ExtraString
 	}
 
 	/**
+	 * The PHP function lcFirst is available in the PHP version >= 5.3.0,
+	 * this method does the same but in the lower PHP versions.
+	 *
+	 * @param string $string
+	 * @return string
+	 */
+	public static function lowerFirst($string) {
+		static $from	= "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		static $to		= "abcdefghijklmnopqrstuvwxyz";
+		$first			= substr($string, 0, 1);
+		$rest			= substr($string, 1, strlen($string) - 1);
+		return strtr($first, $from, $to) . $rest;
+	}
+
+	/**
 	 * It generates random string with specified length.
 	 *
 	 * @param int $length
