@@ -28,7 +28,13 @@ class EskymoObject extends Object
 			return NULL;
 		}
 		else {
-			return Annotations::get($reflection, $annotation);
+			$result = Annotations::getAll($reflection, $annotation);
+			if (sizeof($result) == 1) {
+				return ExtraArray::firstValue($result);
+			}
+			else {
+				return $result;
+			}
 		}
 	}
 
