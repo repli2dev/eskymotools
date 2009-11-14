@@ -100,6 +100,11 @@ class AEntity extends EskymoObject implements IEntity{
 					$translatedVar	= $this->getAnnotation("Translate", $var);
 					$description	= $this->getAnnotation($annotation, $var);
 				}
+				else {
+					$toSkip			= NULL;
+					$translatedVar	= NULL;
+					$description	= NULL;
+				}
 				// The variables which has 'Skip' annotation will be skipped
 				if (!empty($toSkip)) {
 					if ((!is_array($toSkip) && $toSkip == $annotation) || (is_array($toSkip) && in_array($annotation, $toSkip))) {
