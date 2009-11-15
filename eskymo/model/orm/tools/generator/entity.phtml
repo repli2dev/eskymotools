@@ -16,6 +16,9 @@ class {$entityName} extends AEntity
 	 {if !empty($attribute["form"])}
 	 * @Form({if !empty($attribute["form"]["withResource"])}withResource={$attribute["form"]["withResource"]}{/if})
 	 {/if}
+	 {if !empty($attribute["type"])}
+	 * @Type(name={$attribute["type"]["name"]})
+	 {/if}
 	 */
 	{/if}
 	protected {$attribute["name"]};

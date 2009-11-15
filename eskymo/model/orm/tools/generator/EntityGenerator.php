@@ -48,6 +48,12 @@ class EntityGenerator
 				"withResource"	=> "textarea"
 			);
 		}
+		elseif(String::lower($column->getNativeType()) == "enum") {
+			$attribute["type"] = array(
+				"name"	=> "enum"
+			);
+			// TODO: values
+		}
 		return $attribute;
 	}
 
