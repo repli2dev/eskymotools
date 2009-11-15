@@ -40,7 +40,6 @@ class SimpleFormBuilderTest extends EskymoTestCase
 		$this->assertEquals("SelectBox",$this->builder->buildForm()->getComponent("sex")->getClass());
 		$this->assertEquals("TextInput",$this->builder->buildForm()->getComponent("city")->getClass());
 		$this->assertEquals("TextInput",$this->builder->buildForm()->getComponent("children")->getClass());
-		$this->builder->buildForm()->render();
 		try {
 			$this->builder->buildForm()->getComponent("skipped");
 			$this->fail("The component [skipped] should not exist.");
