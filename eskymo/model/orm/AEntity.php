@@ -15,7 +15,8 @@
  * @author		Jan Drabek
  * @version		$Id$
  */
-class AEntity extends EskymoObject implements IEntity{
+class AEntity extends EskymoObject implements IEntity
+{
 
 	/* STATIC ATTRIBUTES */
 
@@ -125,6 +126,23 @@ class AEntity extends EskymoObject implements IEntity{
 			self::$translatedAttributes[$this->getClass()][$annotation] = $translated;
 		}
 		return self::$translatedAttributes[$this->getClass()][$annotation];
+	}
+
+	public function getAttributeType($attribute) {
+		if (empty($attribute)) {
+			throw new NullPointerException("attribute");
+		}
+		if (!in_array($attribute, $this->getAttributeNames())) {
+			throw new InvalidArgumentException("The attribute [$attribute] does not exist.");
+		}
+		$type = $this->getAnnotation("Type", $attribute);
+		if (!empty($type) && isset($type->name) && $type->name == "enum" && empty($type->values)) {
+			throw new InvalidStateException("The type [enum] is set, but the values are not set.");
+		}
+		if (!empty($type) && isset($type->values) && !is_array($type->values)) {
+			$type->values = split(":", $type->values);
+		}
+		return $type;
 	}
 
 	/**

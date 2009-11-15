@@ -21,7 +21,7 @@ class SimpleFormBuilderTest extends EskymoTestCase
 
 	/** @TestThrow(InvalidArgumentException) */
 	public function testSetInvalidResource() {
-		$this->builder->setResource("never", "true");
+		$this->builder->setResource("skipped", "true");
 	}
 
 	public function testSetAndGetResource() {
@@ -37,8 +37,15 @@ class SimpleFormBuilderTest extends EskymoTestCase
 		$this->assertEquals("SelectBox",$this->builder->buildForm()->getComponent("translated_name")->getClass());
 		$this->assertEquals("RadioList",$this->builder->buildForm()->getComponent("description")->getClass());
 		$this->assertEquals("TextArea",$this->builder->buildForm()->getComponent("age")->getClass());
-		$this->assertEquals("TextInput",$this->builder->buildForm()->getComponent("sex")->getClass());
+		$this->assertEquals("SelectBox",$this->builder->buildForm()->getComponent("sex")->getClass());
 		$this->assertEquals("TextInput",$this->builder->buildForm()->getComponent("city")->getClass());
+		$this->assertEquals("TextInput",$this->builder->buildForm()->getComponent("children")->getClass());
+		$this->builder->buildForm()->render();
+		try {
+			$this->builder->buildForm()->getComponent("skipped");
+			$this->fail("The component [skipped] should not exist.");
+		}
+		catch(InvalidArgumentException $e) {}
 	}
 
 	public function testSubmitForm() {
@@ -51,6 +58,7 @@ class SimpleFormBuilderTest extends EskymoTestCase
 		$this->assertEquals(IEntity::STATE_PERSISTED, $this->builder->getEntity()->getState());
 		$this->assertEquals(1, $this->builder->getEntity()->name);
 		$this->assertNull($this->builder->getEntity()->description);
+		$this->assertNull($this->builder->getEntity()->skipped);
 	}
 
 }
@@ -109,6 +117,14 @@ class TestSimpleFormBuilderEntity extends AEntity
 	/** @Form(withoutResource=text) */
 	protected $city;
 
+	protected $children;
+
+	/**
+	 * @Type(name=enum, values=male:female)
+	 */
 	protected $sex;
+
+	/** @Skip(Form) */
+	protected $skipped;
 
 }

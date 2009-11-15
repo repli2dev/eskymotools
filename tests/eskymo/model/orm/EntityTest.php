@@ -27,6 +27,16 @@ class EntityTest extends EskymoTestCase {
 		$this->assertEquals("translated_name", ExtraArray::firstValue($attributes));
 	}
 
+	public function testGetAttributeType() {
+		$entity = $this->factory->createEmpty();
+		$type = $entity->getAttributeType("name");
+		$this->assertFalse(empty($type));
+		$this->assertFalse(empty($type->name));
+		$this->assertEquals("enum", $type->name);
+		$this->assertFalse(empty($type->values));
+		$this->assertEquals(2, sizeof($type->values));
+	}
+
 	public function testLifeCycle() {
 		$entity = $this->factory->createEmpty();
 		$this->assertEquals(IEntity::STATE_NEW, $entity->getState());
@@ -154,6 +164,7 @@ class TestEntity extends AEntity
 	/**
 	 * @Translate(translated_name)
 	 * @Super(translate=super_name)
+	 * @Type(name=enum,values=petr:franta)
 	 */
 	protected $name;
 

@@ -69,11 +69,9 @@ class SimpleFormBuilder implements IFormBuilder
 	public function onSubmit(Form $form) {
 		// Get form values
 		$values = $form->getValues();
-		// Get translation of the entity attributes
-		$translated = $this->entity->getAttributeNames("Form");
 		// Fill the entity
-		foreach ($this->entity->getAttributeNames() AS $attribute) {
-			$this->entity->$attribute = $values[$translated[$attribute]];
+		foreach ($this->entity->getAttributeNames("Form") AS $attribute => $translated) {
+			$this->entity->$attribute = $values[$translated];
 		}
 		// TODO: Exceptions and transaction
 		// Persist the entity
@@ -89,6 +87,11 @@ class SimpleFormBuilder implements IFormBuilder
 		}
 		if (!in_array($name,$this->entity->getAttributeNames("Form"))) {
 			throw new InvalidArgumentException("The resource name [$name] is not compatible with the entity.");
+		}
+		$attribute = ExtraArray::keyOf($this->entity->getAttributeNames("Form"), $name);
+		$type = $this->entity->getAttributeType($attribute);
+		if (!empty($type) && !empty($type->name) && $type->name == "enum") {
+			throw new InvalidStateException("The resource can not be set because the attribute type is declared as [ENUM].");
 		}
 		$this->resources[$name] = $resource;
 	}
@@ -126,6 +129,15 @@ class SimpleFormBuilder implements IFormBuilder
 		$annotation = $this->entity->getAnnotation("Form", $attribute);
 		// Translate the attribute by the Form annotation
 		$translatedAttribute = Tools::arrayGet($this->entity->getAttributeNames("Form"), $attribute);
+		// If the attribute type is enum
+		$type = $this->entity->getAttributeType($attribute);
+		if (!empty($type) && isset($type->name) && $type->name == "enum") {
+			$resource = array();
+			foreach($type->values AS $value) {
+				$resource[$value] = $value;
+			}
+			$this->resources[$translatedAttribute] = $resource;
+		}
 		// If the resource is set
 		if (!empty($this->resources[$translatedAttribute])) {
 			// If the resource is not an array - add hidden input

@@ -15,7 +15,7 @@
  * @author		Jan Drabek
  * @version		$Id$
  */
-interface IEntity
+interface IEntity extends IEskymoObject
 {
 
 	/**
@@ -65,6 +65,15 @@ interface IEntity
 	 * @return array
 	 */
 	function getAttributeNames($annotation = NULL);
+
+	/**
+	 * It returns attribute type
+	 *
+	 * @return array
+	 * @throws NullPointerException of the $attribute is empty.
+	 * @throws InvalidArgumentException if the attribute does not exist.
+	 */
+	function getAttributeType($attribute);
 
 	/**
 	 * It returns data whose name is translated by specified annotation.
