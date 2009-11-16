@@ -66,7 +66,7 @@ abstract class EskymoTestPresenter extends Presenter
 		if (!empty($method) && !$result->isSuccessful()) {
 			foreach ($result->getTested() AS $name => $info) {
 				if ($name == $method && $info instanceof Exception) {
-					Debug::paintBlueScreen($info);
+					Debug::_paintBlueScreen($info);
 				}
 			}
 		}
