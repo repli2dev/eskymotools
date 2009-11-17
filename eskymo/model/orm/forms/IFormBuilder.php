@@ -27,6 +27,13 @@ interface IFormBuilder
 	function &buildForm();
 
 	/**
+	 * It disables a form item
+	 *
+	 * @param string $attribute
+	 */
+	function disableItem($attribute);
+
+	/**
 	 * @return IEntity
 	 */
 	function getEntity();

@@ -51,7 +51,6 @@ class SimpleFormBuilderTest extends EskymoTestCase
 		$this->builder->setResource("translated_name", 1);
 		$form = $this->builder->buildForm();
 		$form->isSubmitted();
-		$form->isPopulated();
 		$form->setDefaults(array());
 		$this->builder->onSubmit($form);
 		$this->assertEquals(IEntity::STATE_PERSISTED, $this->builder->getEntity()->getState());

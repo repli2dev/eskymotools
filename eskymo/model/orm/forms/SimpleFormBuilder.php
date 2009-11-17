@@ -3,6 +3,9 @@
 class SimpleFormBuilder implements IFormBuilder
 {
 
+	/** @var array		*/
+	private $disabled = array();
+
 	/** @var boolean	*/
 	private $done;
 
@@ -44,6 +47,13 @@ class SimpleFormBuilder implements IFormBuilder
 			default:
 				throw new InvalidStateException("The form can not be created becaus the entity is not in state [NEW] or [PERSISTED].");
 		}
+	}
+
+	public function disableItem($attribute) {
+		if (!in_array($attribute,$this->entity->getAttributeNames("Form"))) {
+			throw new InvalidArgumentException("The attribute name [$name] is not compatible with the entity.");
+		}
+		$this->disabled[$attribute] = TRUE;
 	}
 
 	public function getEntity() {
@@ -128,7 +138,8 @@ class SimpleFormBuilder implements IFormBuilder
 		// Get the Form annotation which specified the form element type
 		$annotation = $this->entity->getAnnotation("Form", $attribute);
 		// Translate the attribute by the Form annotation
-		$translatedAttribute = Tools::arrayGet($this->entity->getAttributeNames("Form"), $attribute);
+		$translated = $this->entity->getAttributeNames("Form");
+		$translatedAttribute = $translated[$attribute];
 		// If the attribute type is enum
 		$type = $this->entity->getAttributeType($attribute);
 		if (!empty($type) && isset($type->name) && $type->name == "enum") {
@@ -185,7 +196,9 @@ class SimpleFormBuilder implements IFormBuilder
 	private function &createForm() {
 		// Foreach attribute add a form element
 		foreach($this->entity->getAttributeNames("Form") AS $attribute => $translatedAttribute) {
-			$this->addFormItem($this->form, $attribute);
+			if (!$this->isDisabled($translatedAttribute)) {
+				$this->addFormItem($this->form, $attribute);
+			}
 		}
 		// Decide if the form action is 'insert' or 'update'
 		if ($this->entity->getState() == IEntity::STATE_NEW) {
@@ -197,7 +210,7 @@ class SimpleFormBuilder implements IFormBuilder
 			$defaults	= $this->entity->getData("Form");
 		}
 		// Add submit button
-		$this->form->addSubmit($submit, $submit);
+//		$this->form->addSubmit($submit, $submit);
 		// Set default values
 		foreach($this->resources AS $name => $value) {
 			if (!is_array($value)) {
@@ -208,6 +221,10 @@ class SimpleFormBuilder implements IFormBuilder
 		// Set the form as built
 		$this->setBuilt();
 		return $this->form;
+	}
+
+	private function isDisabled($attribute) {
+		return !empty($this->disabled[$attribute]);
 	}
 
 }
