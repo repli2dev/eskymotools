@@ -94,7 +94,9 @@ class SimpleFormBuilder implements IFormBuilder
 		$values = $form->getValues();
 		// Fill the entity
 		foreach ($this->entity->getAttributeNames("Form") AS $attribute => $translated) {
-			$this->entity->$attribute = $values[$translated];
+			if (isset($values[$translated])) {
+				$this->entity->$attribute = $values[$translated];
+			}
 		}
 		// TODO: Exceptions and transaction
 		// Persist the entity
