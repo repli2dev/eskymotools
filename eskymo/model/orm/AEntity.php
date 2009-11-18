@@ -236,18 +236,9 @@ class AEntity extends EskymoListenableObject implements IEntity
 		if ($this->getState() != IEntity::STATE_NEW) {
 			throw new InvalidStateException("The entity is not in state [NEW]. It can't be loaded from array.");
 		}
-		if (!empty($annotation)) {
-			foreach ($this->getAttributeNames($annotation) AS $var => $translated) {
-				if (isset($source[$translated])) {
-					$this->$var = $source[$translated];
-				}
-			}
-		}
-		else {
-			foreach ($source AS $key => $value) {
-				if (isset($this->$key)) {
-					$this->$key = $value;
-				}
+		foreach ($this->getAttributeNames($annotation) AS $var => $translated) {
+			if (isset($source[$translated])) {
+				$this->$var = $source[$translated];
 			}
 		}
 		$this->loadId($source);
