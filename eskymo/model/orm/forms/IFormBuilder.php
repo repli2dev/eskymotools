@@ -31,7 +31,19 @@ interface IFormBuilder
 	 *
 	 * @param string $attribute
 	 */
-	function disableItem($attribute);
+	function disable($attribute);
+
+	/**
+	 * It disables all form items
+	 */
+	function disableAll();
+
+	/**
+	 * It enables a form item
+	 *
+	 * @param string $attribute
+	 */
+	function enable($attribute);
 
 	/**
 	 * @return IEntity

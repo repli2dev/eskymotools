@@ -49,11 +49,24 @@ class SimpleFormBuilder implements IFormBuilder
 		}
 	}
 
-	public function disableItem($attribute) {
+	public function disable($attribute) {
 		if (!in_array($attribute,$this->entity->getAttributeNames("Form"))) {
 			throw new InvalidArgumentException("The attribute name [$name] is not compatible with the entity.");
 		}
 		$this->disabled[$attribute] = TRUE;
+	}
+
+	public function disableAll() {
+		foreach($this->entity->getAttributeNames("Form") AS $attribute) {
+			$this->disabled[$attribute] = TRUE;
+		}
+	}
+
+	public function enable($attribute) {
+		if (!in_array($attribute,$this->entity->getAttributeNames("Form"))) {
+			throw new InvalidArgumentException("The attribute name [$name] is not compatible with the entity.");
+		}
+		unset($this->disabled[$attribute]);
 	}
 
 	public function getEntity() {
