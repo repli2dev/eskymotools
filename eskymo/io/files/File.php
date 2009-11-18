@@ -227,7 +227,12 @@ class File extends /*Nette\*/Object
 			throw new IOException("The file '".$this->getPath()."' cannot be deleted.", self::ERROR_SECURITY);
 		}
 		Tools::tryError();
-		unlink($this->getPath());
+		if ($this->isDirectory()) {
+			rmdir($this->getPath());
+		}
+		else {
+			unlink($this->getPath());
+		}
 		if  (Tools::catchError($msg)) {
 			throw new IOException($msg, self::ERROR_GENERAL);
 		}
@@ -487,7 +492,8 @@ class File extends /*Nette\*/Object
 			throw new IOException("The directory can not be created.", self::ERROR_SECURITY);
 		}
 		Tools::tryError();
-		$check = mkdir($this->getPath(), $access);
+		// FIXME: The access is problem
+		$check = mkdir($this->getPath()/*, $access*/);
 		if (Tools::catchError($msg)) {
 			throw new IOException($msg, self::ERROR_GENERAL);
 		}
