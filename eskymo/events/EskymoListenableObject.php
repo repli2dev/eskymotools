@@ -19,7 +19,7 @@ abstract class EskymoListenableObject extends EskymoObject implements IListenabl
 		if (!isset($this->listeners[$type])) {
 			$this->listeners[$type] = array();
 		}
-		$this->listeners[$listeners][] = $listener;
+		$this->listeners[$type][] = $listener;
 	}
 
 	/**
