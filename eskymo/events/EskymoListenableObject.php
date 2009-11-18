@@ -1,6 +1,6 @@
 <?php
 
-class EskymoListenableObject extends EskymoObject implements IListenable
+abstract class EskymoListenableObject extends EskymoObject implements IListenable
 {
 
 	/** @var array */
@@ -19,7 +19,7 @@ class EskymoListenableObject extends EskymoObject implements IListenable
 		if (!isset($this->listeners[$type])) {
 			$this->listeners[$type] = array();
 		}
-		$this->listners[$listeners][] = $listener;
+		$this->listeners[$listeners][] = $listener;
 	}
 
 	/**
