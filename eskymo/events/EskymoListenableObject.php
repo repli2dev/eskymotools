@@ -29,7 +29,10 @@ abstract class EskymoListenableObject extends EskymoObject implements IListenabl
 		if (empty($type)) {
 			throw new NullPointerException("type");
 		}
-		foreach($this->listeners AS $listener) {
+		if (empty($this->listeners[$type])) {
+			return;
+		}
+		foreach($this->listeners[$type] AS $listener) {
 			$listener->listen($event);
 		}
 	}
