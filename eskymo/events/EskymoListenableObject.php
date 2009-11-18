@@ -1,6 +1,6 @@
 <?php
 
-class EskymoEventObject extends EskymoObject implements IListenable
+class EskymoListenableObject extends EskymoObject implements IListenable
 {
 
 	/** @var array */

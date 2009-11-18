@@ -15,7 +15,7 @@
  * @author		Jan Drabek
  * @version		$Id$
  */
-class AEntity extends EskymoObject implements IEntity
+class AEntity extends EskymoListenableObject implements IEntity
 {
 
 	/* STATIC ATTRIBUTES */
@@ -72,6 +72,10 @@ class AEntity extends EskymoObject implements IEntity
 		else {
 			parent::__set($name, $value);
 		}
+	}
+
+	public final function addOnPersistListener(IListener $listener) {
+		$this->addListener(IEntity::EVENT_PERSISTED, $listener);
 	}
 
 	public final function delete() {
@@ -224,6 +228,7 @@ class AEntity extends EskymoObject implements IEntity
 		}
 		$this->clearModifiedColumns();
 		$this->setState(IEntity::STATE_PERSISTED);
+		$this->callListeners(IEntity::EVENT_PERSISTED, new EntityPersistedEvent($this));
 		return $this;
 	}
 
@@ -250,7 +255,7 @@ class AEntity extends EskymoObject implements IEntity
 	}
 
 	/* PROTECTED METHODS */
-
+	
 	/**
 	 * It tries to load ID from the source
 	 *

@@ -15,7 +15,7 @@
  * @author		Jan Drabek
  * @version		$Id$
  */
-interface IEntity extends IEskymoObject
+interface IEntity extends IEskymoObject, IListenable
 {
 
 	/**
@@ -32,6 +32,11 @@ interface IEntity extends IEskymoObject
 	 * All data
 	 */
 	const DATA_ALL			= "all";
+
+	/**
+	 * Event which describes the entity has been perisisted
+	 */
+	const EVENT_PERSISTED	= "onPersisted";
 
 	/**
 	 * The entity is new and not persisted by the inseter.
@@ -53,6 +58,14 @@ interface IEntity extends IEskymoObject
 	 */
 	const STATE_DELETED		= "deleted";
 
+	/**
+	 * It adds a listener which is called after the entity is persisted
+	 *
+	 * @param IListener $listener
+	 * @see EntityPersistedEvent
+	 */
+	function addOnPersistListener(IListener $listener);
+	
 	/**
 	 * It deletes the entity
 	 */
