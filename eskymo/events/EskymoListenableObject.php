@@ -16,10 +16,10 @@ class EskymoListenableObject extends EskymoObject implements IListenable
 		if (empty($type)) {
 			throw new NullPointerException("type");
 		}
-		if (!isset($this->listners[$type])) {
-			$this->listners[$type] = array();
+		if (!isset($this->listeners[$type])) {
+			$this->listeners[$type] = array();
 		}
-		$this->listners[$type][] = $listener;
+		$this->listners[$listeners][] = $listener;
 	}
 
 	/**
@@ -29,7 +29,7 @@ class EskymoListenableObject extends EskymoObject implements IListenable
 		if (empty($type)) {
 			throw new NullPointerException("type");
 		}
-		foreach($this->listners AS $listener) {
+		foreach($this->listeners AS $listener) {
 			$listener->listern($event);
 		}
 	}
