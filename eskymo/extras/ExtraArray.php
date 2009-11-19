@@ -7,6 +7,12 @@
 class ExtraArray
 {
 
+	public static function get(array $array, $key) {
+		if (empty($key)) {
+			throw new NullPointerException("key");
+		}
+		return isset($array[$key]) ? $array[$key] : NULL;
+	}
 	/**
 	 * It returns the first key name, or NULL if the array is empty.
 	 *
