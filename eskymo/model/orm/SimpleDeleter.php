@@ -37,7 +37,7 @@ class SimpleDeleter implements IDeleter
 	 * @param string $table
 	 */
 	private function  __construct($table) {
-		$this->table;
+		$this->table = $table;
 	}
 
 	/**
