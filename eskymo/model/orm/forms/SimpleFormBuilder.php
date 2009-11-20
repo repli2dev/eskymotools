@@ -155,6 +155,7 @@ class SimpleFormBuilder implements IFormBuilder
 		// Translate the attribute by the Form annotation
 		$translated = $this->entity->getAttributeNames("Form");
 		$translatedAttribute = $translated[$attribute];
+		$label = ucfirst(strtr($translatedAttribute, "_", " "));
 		// If the attribute type is enum
 		$type = $this->entity->getAttributeType($attribute);
 		if (!empty($type) && isset($type->name) && $type->name == "enum") {
@@ -172,13 +173,13 @@ class SimpleFormBuilder implements IFormBuilder
 			}
 			// If the annotation does not specify the form element type, add a selectbox
 			elseif(empty($annotation) || !isset($annotation->withResource) || $annotation->withResource == "selectbox") {
-				$form->addSelect($translatedAttribute, $translatedAttribute, $this->resources[$translatedAttribute]);
+				$form->addSelect($translatedAttribute, $label, $this->resources[$translatedAttribute]);
 			}
 			// Otherwise add the specified element
 			else {
 				switch($annotation->withResource) {
 					case "radiobox":
-						$form->addRadioList($translatedAttribute, $translatedAttribute, $this->resources[$translatedAttribute]);
+						$form->addRadioList($translatedAttribute, $label, $this->resources[$translatedAttribute]);
 						break;
 					case "checkbox":
 					default:
@@ -190,14 +191,16 @@ class SimpleFormBuilder implements IFormBuilder
 		else {
 			// If the annotation does not specify the form element type, add a text input
 			if (empty($annotation) || !isset($annotation->withoutResource) || $annotation->withoutResource == "text") {
-				$form->addText($translatedAttribute, $translatedAttribute);
+				$form->addText($translatedAttribute, $label);
 			}
 			// Otherwise add specified element.
 			else {
 				switch($annotation->withoutResource) {
 					case "textarea":
-						$form->addTextArea($translatedAttribute, $translatedAttribute);
+						$form->addTextArea($translatedAttribute, $label);
 						break;
+					case "password":
+						$form->addPassword($translatedAttribute, $label);
 					default:
 						throw new NotSupportedException("The form element type [".$annotation->withoutResource."] is not supported");
 						break;
