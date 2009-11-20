@@ -182,6 +182,10 @@ class SimpleFormBuilder implements IFormBuilder
 						$form->addRadioList($translatedAttribute, $label, $this->resources[$translatedAttribute]);
 						break;
 					case "checkbox":
+						break;
+					case "password":
+						$form->addPassword($translatedAttribute, $label);
+						break;
 					default:
 						throw new NotSupportedException("The form element type [".$annotation->withResource."] is not supported");
 				}
@@ -201,6 +205,7 @@ class SimpleFormBuilder implements IFormBuilder
 						break;
 					case "password":
 						$form->addPassword($translatedAttribute, $label);
+						break;
 					default:
 						throw new NotSupportedException("The form element type [".$annotation->withoutResource."] is not supported");
 						break;
@@ -227,8 +232,6 @@ class SimpleFormBuilder implements IFormBuilder
 			$submit		= "update";
 			$defaults	= $this->entity->getData("Form");
 		}
-		// Add submit button
-//		$this->form->addSubmit($submit, $submit);
 		// Set default values
 		foreach($this->resources AS $name => $value) {
 			if (!is_array($value)) {
