@@ -23,6 +23,7 @@ class SimpleTableModel extends ATableModel
 	 * @param string $table Table name.
 	 */
 	private function  __construct($table) {
+		parent::__costruct();
 		$this->table = $table;
 	}
 

@@ -59,6 +59,10 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 		"enum"		=> "%s"
 	);
 
+	public function __costruct() {
+	    //trigger_error("The class ".$this->getReflection()->getName()." is deprecated, use native dibi methods instead.", E_USER_WARNING);
+	}
+
 	/**
 	 * It returns all available columns
 	 *
