@@ -34,12 +34,12 @@ class SimpleFormBuilderTest extends EskymoTestCase
 	public function testFormComponentTypes() {
 		$this->builder->setResource("translated_name", array("aa" => "aaa", "bbb" => "bbb"));
 		$this->builder->setResource("description", array("aa" => "aaa", "bbb" => "bbb"));
-		$this->assertEquals("SelectBox",$this->builder->buildForm()->getComponent("translated_name")->getClass());
-		$this->assertEquals("RadioList",$this->builder->buildForm()->getComponent("description")->getClass());
-		$this->assertEquals("TextArea",$this->builder->buildForm()->getComponent("age")->getClass());
-		$this->assertEquals("SelectBox",$this->builder->buildForm()->getComponent("sex")->getClass());
-		$this->assertEquals("TextInput",$this->builder->buildForm()->getComponent("city")->getClass());
-		$this->assertEquals("TextInput",$this->builder->buildForm()->getComponent("children")->getClass());
+		$this->assertEquals("SelectBox",$this->builder->buildForm()->getComponent("translated_name")->getReflection()->getName());
+		$this->assertEquals("RadioList",$this->builder->buildForm()->getComponent("description")->getReflection()->getName());
+		$this->assertEquals("TextArea",$this->builder->buildForm()->getComponent("age")->getReflection()->getName());
+		$this->assertEquals("SelectBox",$this->builder->buildForm()->getComponent("sex")->getReflection()->getName());
+		$this->assertEquals("TextInput",$this->builder->buildForm()->getComponent("city")->getReflection()->getName());
+		$this->assertEquals("TextInput",$this->builder->buildForm()->getComponent("children")->getReflection()->getName());
 		try {
 			$this->builder->buildForm()->getComponent("skipped");
 			$this->fail("The component [skipped] should not exist.");
@@ -50,6 +50,7 @@ class SimpleFormBuilderTest extends EskymoTestCase
 	public function testSubmitForm() {
 		$this->builder->setResource("translated_name", 1);
 		$form = $this->builder->buildForm();
+		$form->render();
 		$form->isSubmitted();
 		$form->setDefaults(array());
 		$this->builder->onSubmit($form);

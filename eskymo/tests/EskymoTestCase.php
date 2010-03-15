@@ -82,15 +82,15 @@ abstract class EskymoTestCase extends EskymoObject implements IEskymoTest
 		// Check annotations
 		$reflection = $this->reflection->getMethod($method);
 		// If it is skipped, save it.
-		if (Annotations::has($reflection, "Skip")) {
+		if ($reflection->hasAnnotation("Skip")) {
 			$this->getResult()->endMethod(EskymoTestResult::SKIPPED);
 		}
 		// If the method tests an expcetion throwing, test it.
-		elseif (Annotations::has($reflection, "TestThrow")) {
-			if (count(Annotations::getAll($reflection, "TestThrow")) == 0) {
+		elseif ($reflection->hasAnnotation("TestThrow")) {
+			if (count($reflection->getAnnotation("TestThrow")) == 0) {
 				throw new NullPointerException("Method '$method' has 'TestThrow' annotation, but the exception class name is undefined.");
 			}
-			$exceptionClass = ExtraArray::firstValue(Annotations::getAll($reflection, "TestThrow"));
+			$exceptionClass = ExtraArray::firstValue((array)$reflection->getAnnotation("TestThrow"));
 			try {
 				call_user_func(array($this, $method));
 				$this->fail("Expected '$exceptionClass', but the method '$method' does not throw it.");

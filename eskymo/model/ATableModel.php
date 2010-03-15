@@ -288,10 +288,10 @@ abstract class ATableModel extends /*Nette\*/Object implements ITableModel
 	 * @return string Table name
 	 */
 	protected function tableName() {
-		if (!method_exists($this->getClass(), "getTable")) {
-			throw new NotImplementedException("The class '".$this->getClass()."' extends 'ATableModel' and has to implement static method 'getTable()'.");
+		if (!method_exists($this->getReflection->getName(), "getTable")) {
+			throw new NotImplementedException("The class '".$this->getReflection->getName()."' extends 'ATableModel' and has to implement static method 'getTable()'.");
 		}
-		return call_user_func_array(array($this->getClass(), "getTable"), $args = array());
+		return call_user_func_array(array($this->getReflection->getName(), "getTable"), $args = array());
 	}
 
 	/**

@@ -94,10 +94,10 @@ class AEntity extends EskymoListenableObject implements IEntity
 	 * @throws NullPointerException if the $annotation is empty
 	 */
 	public function getAttributeNames($annotation = NULL) {
-		if (!isset(self::$translatedAttributes[$this->getClass()])) {
-			self::$translatedAttributes[$this->getClass()] = array();
+		if (!isset(self::$translatedAttributes[$this->getReflection()->getName()])) {
+			self::$translatedAttributes[$this->getReflection()->getName()] = array();
 		}
-		if (!isset(self::$translatedAttributes[$this->getClass()][$annotation])) {
+		if (!isset(self::$translatedAttributes[$this->getReflection()->getName()][$annotation])) {
 			$translated = array();
 			foreach($this->getVars() AS $var) {
 				if (!empty($annotation)) {
@@ -127,9 +127,9 @@ class AEntity extends EskymoListenableObject implements IEntity
 
 				$translated[$var] = $translatedVar;
 			}
-			self::$translatedAttributes[$this->getClass()][$annotation] = $translated;
+			self::$translatedAttributes[$this->getReflection()->getName()][$annotation] = $translated;
 		}
-		return self::$translatedAttributes[$this->getClass()][$annotation];
+		return self::$translatedAttributes[$this->getReflection()->getName()][$annotation];
 	}
 
 	public function getAttributeType($attribute) {
@@ -195,7 +195,7 @@ class AEntity extends EskymoListenableObject implements IEntity
 	 * which translates the key
 	 */
 	public function getIdName() {
-		if (!isset(self::$translatedIds[$this->getClass()])) {
+		if (!isset(self::$translatedIds[$this->getReflection()->getName()])) {
 			$description = $this->getAnnotation("Id");
 			if (empty($description)) {
 				throw new InvalidStateException("The annotation [Id] has to be set.");
@@ -203,9 +203,9 @@ class AEntity extends EskymoListenableObject implements IEntity
 			if (!isset($description->translate)) {
 				throw new InvalidStateException("The annotation [Id] has to contain parameter [translate]");
 			}
-			self::$translatedIds[$this->getClass()] = $description->translate;
+			self::$translatedIds[$this->getReflection()->getName()] = $description->translate;
 		}
-		return self::$translatedIds[$this->getClass()];
+		return self::$translatedIds[$this->getReflection()->getName()];
 	}
 
 	public final function getState() {

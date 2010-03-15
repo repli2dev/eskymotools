@@ -4,10 +4,10 @@
  *
  * @author papi
  */
-class EskymoObject extends Object implements IEskymoObject
+abstract class EskymoObject extends Object implements IEskymoObject
 {
 
-	function getAnnotation($annotation, $attribute = NULL) {
+	public function getAnnotation($annotation, $attribute = NULL) {
 		if (empty($annotation)) {
 			throw new NullPointerException("annotation");
 		}
@@ -17,22 +17,16 @@ class EskymoObject extends Object implements IEskymoObject
 		else {
 			$reflection = $this->getReflection()->getProperty($attribute);
 		}
-		if (!Annotations::has($reflection, $annotation)) {
+		if (!$reflection->hasAnnotation($annotation)) {
 			return NULL;
 		}
 		else {
-			$result = Annotations::getAll($reflection, $annotation);
-			if (sizeof($result) == 1) {
-				return ExtraArray::firstValue($result);
-			}
-			else {
-				return $result;
-			}
+			return $reflection->getAnnotation($annotation);
 		}
 	}
 
 	public function getMethods() {
-		return get_class_methods($this->getClass());
+		return get_class_methods($this->getReflection()->getName());
 	}
 
 	public function getVars() {
