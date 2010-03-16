@@ -56,7 +56,7 @@ abstract class GeneralEntity extends EskymoListenableObject implements IEntity {
 	    }
 	}
 	$this->loadId($source);
-	$this->setState(IEntity::EVENT_PERSISTED);
+	$this->setState(IEntity::STATE_PERSISTED);
 	return $this;
     }
 
