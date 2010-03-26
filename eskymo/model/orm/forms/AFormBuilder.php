@@ -109,6 +109,42 @@ abstract class AFormBuilder {
 
     /* PROTECTED METHODS */
 
+    protected final function addItemToForm(Form &$form, $name, $label, $type, $resource = NULL) {
+	switch($type) {
+	    case IFormBuilder::CHECKBOX:
+		throw new NotImplementedException();
+		break;
+	    case IFormBuilder::HIDDEN:
+		$form->addHidden($name);
+		break;
+	    case IFormBuilder::PASSWORD:
+		$form->addPassword($name, $label);
+		break;
+	    case IFormBuilder::RADIOBOX:
+		$form->addRadioList($name, $label, $resource);
+		break;
+	    case IFormBuilder::SELECTBOX:
+		$form->addSelect($name, $label, $resource);
+		break;
+	    case IFormBuilder::TEXTAREA:
+		$form->addTextArea($name, $label);
+		break;
+	    case IFormBuilder::TEXTINPUT:
+		$form->addText($name, $label);
+		break;
+	    default:
+		throw new NotSupportedException("The form element type [".$type."] is not supported");
+	}
+    }
+
+    protected final function addFormRule(Form &$form, $name, $type, $message, $arg) {
+	$form[$name]->addRule(
+	    constant("Form::" . String::upper($type)),
+	    $message,
+	    !empty($arg) ? $arg : NULL
+	);
+    }
+
     /** @return Form */
     protected abstract function &createForm();
 

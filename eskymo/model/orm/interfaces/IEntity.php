@@ -34,6 +34,11 @@ interface IEntity extends IEskymoObject, IListenable
 	const DATA_ALL			= "all";
 
 	/**
+	 * Event which describes the entity has been deleted
+	 */
+	const EVENT_DELETED	= "onDeleted";
+
+	/**
 	 * Event which describes the entity has been perisisted
 	 */
 	const EVENT_PERSISTED	= "onPersisted";

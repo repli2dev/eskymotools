@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<entity-forms>
+    <form name="testForm" entity="XMLFormBuilderTestEntity">
+	<attribute name="first">
+	   <label>First label</label>
+	    <with-resource>
+		<label>With resource label</label>
+	    </with-resource>
+	    <without-resource>
+		<type>textarea</type>
+	    </without-resource>
+	    <rules>
+		<rule>
+		    <type>filled</type>
+		    <message>The field has to be filled.</message>
+		</rule>
+	    </rules>
+	</attribute>
+    </form>
+</entity-forms>

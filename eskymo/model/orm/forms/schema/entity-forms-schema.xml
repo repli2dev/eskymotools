@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- TODO -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element	name="entity-forms">
+	<xs:complexType>
+	    <xs:sequence>
+		<xs:element name="form" type="entity-form" maxOccurs="unbounded" />
+	    </xs:sequence>
+	</xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="entity-form">
+	<xs:sequence>
+	    <xs:element name="attribute" type="form-attribute" maxOccurs="unbounded" />
+	</xs:sequence>
+	<xs:attribute name="name" type="xs:string" use="required"/>
+	<xs:attribute name="entity" type="xs:string" use="required"/>
+	<xs:attribute name="extends" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="form-attribute">
+	<xs:all>
+	    <xs:element name="label" type="xs:string" minOccurs="0" />
+	    <xs:element name="with-resource" type="form-attribute-element" minOccurs="0" />
+	    <xs:element name="without-resource" type="form-attribute-element" minOccurs="0" />
+	</xs:all>
+	<xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="form-attribute-element">
+	<xs:all>
+	    <xs:element name="label" type="xs:string" minOccurs="0" />
+	    <xs:element name="type" type="xs:string" />
+	</xs:all>
+    </xs:complexType>
+
+</xs:schema>

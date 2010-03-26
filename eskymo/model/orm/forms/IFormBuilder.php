@@ -18,6 +18,21 @@
 interface IFormBuilder
 {
 
+	const CHECKBOX	= "checkbox";
+
+	const HIDDEN	= "hidden";
+
+	const PASSWORD	= "password";
+
+	const RADIOBOX	= "radiobox";
+
+	const SELECTBOX = "selectbox";
+
+	const TEXTAREA	= "textarea";
+
+	const TEXTINPUT	= "textinput";
+
+
 	/**
 	 * It retursn a built form. This form is built only once and if you call
 	 * this method again, you retrieve the same form.
