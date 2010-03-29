@@ -16,7 +16,9 @@ class XMLFormBuilderTest extends EskymoTestCase
 
     public function testBasic() {
 	$this->builder->setResource("first", array("aaa" => "aaa"));
-	$this->builder->buildForm()->render();
+	$form = $this->builder->buildForm();
+	$form->addSubmit("send", "Submit");
+	$form->render();
     }
 
 }
@@ -24,4 +26,8 @@ class XMLFormBuilderTest extends EskymoTestCase
 class XMLFormBuilderTestEntity extends AEntity
 {
     protected $first;
+
+    protected $second;
+
+    protected $third;
 }

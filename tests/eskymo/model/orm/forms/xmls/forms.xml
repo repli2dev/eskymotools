@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<entity-forms>
+<entity-forms
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="/home/papi/files/workspace/working_copy/eskymofw/eskymo/model/orm/forms/schema/entity-forms-schema.xsd"
+>
     <form name="testForm" entity="XMLFormBuilderTestEntity">
 	<attribute name="first">
 	   <label>First label</label>
@@ -10,6 +13,15 @@
 	    <without-resource>
 		<type>textarea</type>
 	    </without-resource>
+	    <rules>
+		<rule>
+		    <type>filled</type>
+		    <message>The field has to be filled.</message>
+		</rule>
+	    </rules>
+	</attribute>
+	<attribute name="second">
+	    <label>Second label</label>
 	    <rules>
 		<rule>
 		    <type>filled</type>

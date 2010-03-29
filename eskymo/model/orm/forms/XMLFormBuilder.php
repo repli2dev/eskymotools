@@ -36,17 +36,17 @@ class XMLFormBuilder extends AFormBuilder
 		$label = (string)$attribute->label;
 	    }
 	    if ($this->getResource($name) == NULL) {
-		if (isset($attribute->without_resource->label)) {
-		    $label = $attribute->without_resource->label;
+		if (isset($attribute->{'without-resource'}->label)) {
+		    $label = $attribute->{'without-resource'}->label;
 		}
-		$type	    = isset($attribute->without_resource->type) ? $attribute->without_resource->type : IFormBuilder::TEXTINPUT;
+		$type	    = isset($attribute->{'without-resource'}->type) ? $attribute->{'without-resource'}->type : IFormBuilder::TEXTINPUT;
 		$resource   = NULL;
 	    }
 	    else {
-		if (isset($attribute->with_resource->label)) {
-		    $label = $attribute->with_resource->label;
+		if (isset($attribute->{'with-resource'}->label)) {
+		    $label = $attribute->{'with-resource'}->label;
 		}
-		$type	    = isset($attribute->with_resource->type) ? $attribute->with_resource->type : IFormBuilder::SELECTBOX;
+		$type	    = isset($attribute->{'with-resource'}->type) ? $attribute->{'with-resource'}->type : IFormBuilder::SELECTBOX;
 		$resource   = $this->getResource($name);
 	    }
 	    $this->addItemToForm($form, $name, $label, $type, $resource);
