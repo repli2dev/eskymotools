@@ -14,6 +14,9 @@ class XMLFormBuilder extends AFormBuilder
 	$this->config	= $config;
 	$this->setForm($form);
 	$entityName = $config["entity"];
+	if (!class_exists($entityName)) {
+	    throw new InvalidStateException("The entity [$entityName] does not exist.");
+	}
 	$factory = SimpleEntityFactory::createEntityFactory(strtr($entityName, array("Entity" => "")));
 	$this->setEntity($factory->createEmpty());
     }
@@ -27,40 +30,59 @@ class XMLFormBuilder extends AFormBuilder
 	if (isset($config["extends"])) {
 	    $form = $this->getFactory()->createBuilder($name, $form)->buildForm();
 	}
-	foreach($config->attribute AS $attribute) {
-	    $name = (string)$attribute["name"];
-	    if ($this->isDisabled($name)) {
-		continue;
-	    }
-	    if (isset($attribute->label)) {
-		$label = (string)$attribute->label;
-	    }
-	    if ($this->getResource($name) == NULL) {
-		if (isset($attribute->{'without-resource'}->label)) {
-		    $label = $attribute->{'without-resource'}->label;
+	foreach($config AS $item) {
+	    if (isset($item->attribute)) {
+		if (empty($item["name"])) {
+		    $form->addGroup();
 		}
-		$type	    = isset($attribute->{'without-resource'}->type) ? $attribute->{'without-resource'}->type : IFormBuilder::TEXTINPUT;
-		$resource   = NULL;
+		else {
+		    $form->addGroup((string)$item["name"]);
+		}
+		foreach($item->attribute AS $attribute) {
+		    $this->addAttribute($form, $attribute);
+		}
 	    }
 	    else {
-		if (isset($attribute->{'with-resource'}->label)) {
-		    $label = $attribute->{'with-resource'}->label;
-		}
-		$type	    = isset($attribute->{'with-resource'}->type) ? $attribute->{'with-resource'}->type : IFormBuilder::SELECTBOX;
-		$resource   = $this->getResource($name);
-	    }
-	    $this->addItemToForm($form, $name, $label, $type, $resource);
-	    foreach($attribute->rules->rule AS $rule) {
-		$rType	    = (string)$rule->type;
-		$message    = (string)$rule->message;
-		$arg	    = (string)$rule->arg;
-		$this->addFormRule($form, $name, $rType, $message, $arg);
+		$this->addAttribute($form, $item);
 	    }
 	}
 	return $form;
     }
 
     // ---- PRIVATE METHODS
+
+    private function addAttribute(Form $form, $config) {
+	    $name = (string)$config["name"];
+	    if ($this->isDisabled($name)) {
+		continue;
+	    }
+	    if (isset($config->label)) {
+		$label = (string)$config->label;
+	    }
+	    if ($this->getResource($name) == NULL) {
+		if (isset($config->{'without-resource'}->label)) {
+		    $label = $config->{'without-resource'}->label;
+		}
+		$type	    = isset($config->{'without-resource'}->type) ? $config->{'without-resource'}->type : IFormBuilder::TEXTINPUT;
+		$resource   = NULL;
+	    }
+	    else {
+		if (isset($config->{'with-resource'}->label)) {
+		    $label = $config->{'with-resource'}->label;
+		}
+		$type	    = isset($config->{'with-resource'}->type) ? $config->{'with-resource'}->type : IFormBuilder::SELECTBOX;
+		$resource   = $this->getResource($name);
+	    }
+	    $this->addItemToForm($form, $name, $label, $type, $resource);
+	    if (isset($config->rules)) {
+		foreach($config->rules->rule AS $rule) {
+		    $rType	    = (string)$rule->type;
+		    $message    = (string)$rule->message;
+		    $arg	    = (string)$rule->arg;
+		    $this->addFormRule($form, $name, $rType, $message, $arg);
+		}
+	    }
+    }
 
     private function getConfig() {
 	return $this->config;

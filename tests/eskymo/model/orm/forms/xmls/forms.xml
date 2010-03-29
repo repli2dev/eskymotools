@@ -5,29 +5,36 @@
     xsi:noNamespaceSchemaLocation="/home/papi/files/workspace/working_copy/eskymofw/eskymo/model/orm/forms/schema/entity-forms-schema.xsd"
 >
     <form name="testForm" entity="XMLFormBuilderTestEntity">
-	<attribute name="first">
-	   <label>First label</label>
-	    <with-resource>
-		<label>With resource label</label>
-	    </with-resource>
-	    <without-resource>
-		<type>textarea</type>
-	    </without-resource>
-	    <rules>
-		<rule>
-		    <type>filled</type>
-		    <message>The field has to be filled.</message>
-		</rule>
-	    </rules>
-	</attribute>
-	<attribute name="second">
-	    <label>Second label</label>
-	    <rules>
-		<rule>
-		    <type>filled</type>
-		    <message>The field has to be filled.</message>
-		</rule>
-	    </rules>
-	</attribute>
+	<group>
+	    <attribute name="first">
+	       <label>First label</label>
+		<with-resource>
+		    <label>With resource label</label>
+		</with-resource>
+		<without-resource>
+		    <type>textarea</type>
+		</without-resource>
+		<rules>
+		    <rule>
+			<type>filled</type>
+			<message>The field has to be filled.</message>
+		    </rule>
+		</rules>
+	    </attribute>
+	    <attribute name="second">
+		<label>Second label</label>
+		<rules>
+		    <rule>
+			<type>filled</type>
+			<message>The field has to be filled.</message>
+		    </rule>
+		</rules>
+	    </attribute>
+	</group>
+	<group name="Group one">
+	    <attribute name="third">
+		<label>Third label</label>
+	    </attribute>
+	</group>
     </form>
 </entity-forms>

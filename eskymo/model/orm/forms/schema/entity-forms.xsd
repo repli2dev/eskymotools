@@ -13,12 +13,20 @@
     </xs:element>
 
     <xs:complexType name="entity-form">
-	<xs:sequence>
-	    <xs:element name="attribute" type="form-attribute" maxOccurs="unbounded" />
-	</xs:sequence>
+	<xs:all>
+	    <xs:element name="attribute" type="form-attribute" minOccurs="0" maxOccurs="unbounded" />
+	    <xs:element name="group" type="group" minOccurs="0" maxOccurs="unbounded" />
+	</xs:all>
 	<xs:attribute name="name" type="xs:string" use="required"/>
 	<xs:attribute name="entity" type="xs:string" use="required"/>
 	<xs:attribute name="extends" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="group">
+	<xs:all>
+	    <xs:element name="attribute" type="form-attribute" maxOccurs="unbounded" />
+	</xs:all>
+	<xs:attribute name="name" type="xs:string" use="optional" />
     </xs:complexType>
 
     <xs:complexType name="form-attribute">
