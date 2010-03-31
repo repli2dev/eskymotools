@@ -27,6 +27,19 @@ abstract class AFormBuilder extends EskymoListenableObject
 	    case IEntity::STATE_NEW:
 	    case IEntity::STATE_PERSISTED:
 		$this->setForm($this->createForm());
+		// Default values
+		$defaults = array();
+		// Default values from entity
+		if ($this->getEntity()->getState() == IEntity::STATE_PERSISTED) {
+		    $defaults = $this->getEntity()->getData("Form");
+		}
+		// Default values from resources
+		foreach($this->getResources() AS $name => $value) {
+		    if (!is_array($value)) {
+			$defaults[$name] = $value;
+		    }
+		}
+		$this->getForm()->setDefaults($defaults);
 		$this->built = true;
 		return $this->form;
 		break;

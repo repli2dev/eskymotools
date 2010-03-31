@@ -112,22 +112,6 @@ class SimpleFormBuilder extends AFormBuilder implements IFormBuilder {
 		$this->addFormItem($form, $attribute);
 	    }
 	}
-	// Decide if the form action is 'insert' or 'update'
-	if ($this->getEntity()->getState() == IEntity::STATE_NEW) {
-	    $submit	= "insert";
-	    $defaults	= array();
-	}
-	else {
-	    $submit	= "update";
-	    $defaults	= $this->getEntity()->getData("Form");
-	}
-	// Set default values
-	foreach($this->getResources() AS $name => $value) {
-	    if (!is_array($value)) {
-		$defaults[$name] = $value;
-	    }
-	}
-	$form->setDefaults($defaults);
 	return $form;
     }
 

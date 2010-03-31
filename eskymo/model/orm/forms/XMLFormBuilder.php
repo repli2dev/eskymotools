@@ -7,9 +7,12 @@ class XMLFormBuilder extends AFormBuilder
 
     private $config;
 
+    /** @var IEntity */
+    private $entity;
+
     // ---- PUBLIC METHODS
 
-    public function  __construct(XMLFormBuilderFactory $factory, $config, Form $form) {
+    public function  __construct(XMLFormBuilderFactory $factory, $config, Form $form, IEntity $entity) {
 	$this->factory	= $factory;
 	$this->config	= $config;
 	$this->setForm($form);
@@ -17,8 +20,10 @@ class XMLFormBuilder extends AFormBuilder
 	if (!class_exists($entityName)) {
 	    throw new InvalidStateException("The entity [$entityName] does not exist.");
 	}
-	$factory = SimpleEntityFactory::createEntityFactory(strtr($entityName, array("Entity" => "")));
-	$this->setEntity($factory->createEmpty());
+	if (get_class($entity) != $entityName) {
+	    throw new InvalidArgumentException("The entity type [" + get_class($entity) + "] does not match with entity type [$entityName] declared in config file.");
+	}
+	$this->setEntity($entity);
     }
 
     // ---- PROTECTED METHODS
@@ -70,7 +75,8 @@ class XMLFormBuilder extends AFormBuilder
 		if (isset($config->{'with-resource'}->label)) {
 		    $label = $config->{'with-resource'}->label;
 		}
-		$type	    = isset($config->{'with-resource'}->type) ? $config->{'with-resource'}->type : IFormBuilder::SELECTBOX;
+		$defaultT   = is_array($this->getResource($name)) ? IFormBuilder::SELECTBOX : IFormBuilder::HIDDEN;
+		$type	    = isset($config->{'with-resource'}->type) ? $config->{'with-resource'}->type : $defaultT;
 		$resource   = $this->getResource($name);
 	    }
 	    $this->addItemToForm($form, $name, $label, $type, $resource);

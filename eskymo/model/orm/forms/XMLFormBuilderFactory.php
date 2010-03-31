@@ -21,8 +21,8 @@ class XMLFormBuilderFactory
     }
 
     /** @return IFormBuilder */
-    public function createBuilder($name, Form $form) {
-	return new XMLFormBuilder($this,$this->getFormConfig($name), $form);
+    public function createBuilder($name, Form $form, IEntity $entity) {
+	return new XMLFormBuilder($this,$this->getFormConfig($name), $form, $entity);
     }
 
     private function getFormConfig($name) {

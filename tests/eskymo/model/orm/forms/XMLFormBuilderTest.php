@@ -11,11 +11,13 @@ class XMLFormBuilderTest extends EskymoTestCase
     public function setUp() {
 	$this->factory = new XMLFormBuilderFactory(new File(dirname(__FILE__) . "/xmls/forms.xml"));
 	$form = new AppForm(Environment::getApplication()->getPresenter(), "testForm");
-	$this->builder = $this->factory->createBuilder("testForm", $form);
+	$factory = SimpleEntityFactory::createEntityFactory("XMLFormBuilderTest");
+	$this->builder = $this->factory->createBuilder("testForm", $form,$factory->createEmpty());
     }
 
     public function testBasic() {
-	$this->builder->setResource("first", array("aaa" => "aaa"));
+	$this->builder->setResource("first", array("AaAA" => "AAA"));
+	$this->builder->setResource("second", "hidden");
 	$form = $this->builder->buildForm();
 	$form->addSubmit("send", "Submit");
 	$form->render();
