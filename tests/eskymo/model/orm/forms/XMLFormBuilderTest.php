@@ -9,7 +9,7 @@ class XMLFormBuilderTest extends EskymoTestCase
     private $builder;
 
     public function setUp() {
-	$this->factory = new XMLBuilderFactory(new File(dirname(__FILE__) . "/xmls/forms.xml"));
+	$this->factory = new XMLFormBuilderFactory(new File(dirname(__FILE__) . "/xmls/forms.xml"));
 	$form = new AppForm(Environment::getApplication()->getPresenter(), "testForm");
 	$this->builder = $this->factory->createBuilder("testForm", $form);
     }

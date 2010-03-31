@@ -1,5 +1,6 @@
 <?php
-abstract class AFormBuilder {
+abstract class AFormBuilder extends EskymoListenableObject
+{
 
     /** @var bool */
     private $built;

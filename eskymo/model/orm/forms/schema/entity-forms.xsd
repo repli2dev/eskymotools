@@ -76,7 +76,6 @@
 	<xs:restriction base="xs:string">
 	    <xs:enumeration value="filled" />
 	    <xs:enumeration value="email" />
-	    <!-- TODO -->
 	</xs:restriction>
     </xs:simpleType>
 

@@ -1,5 +1,5 @@
 <?php
-class XMLBuilderFactory
+class XMLFormBuilderFactory
 {
 
     private $forms = array();

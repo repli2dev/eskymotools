@@ -2,14 +2,14 @@
 class XMLFormBuilder extends AFormBuilder
 {
 
-    /** @var XMLBuilderFactory */
+    /** @var XMLFormBuilderFactory */
     private $factory;
 
     private $config;
 
     // ---- PUBLIC METHODS
 
-    public function  __construct(XMLBuilderFactory $factory, $config, Form $form) {
+    public function  __construct(XMLFormBuilderFactory $factory, $config, Form $form) {
 	$this->factory	= $factory;
 	$this->config	= $config;
 	$this->setForm($form);
