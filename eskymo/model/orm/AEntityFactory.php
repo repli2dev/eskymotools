@@ -37,7 +37,7 @@ abstract class AEntityFactory implements IEntityFactory
 
 	public function fetchAndCreateAll(IDataSource $source){
 		$result = array();
-		while($entity = $this->fetchAndCreate($source)){
+		while($entity = $this->fetchAndCreate($source, "Load")){
 			$result[] = $entity;
 		}
 		return $result;
