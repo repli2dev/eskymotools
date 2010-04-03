@@ -1,0 +1,4 @@
+mkdir -p './app/logs'
+mkdir -p './app/temp'
+mkdir -p './eskymo/model/orm/tools/generator/example/temp'
+chmod 700 './.metadata'
