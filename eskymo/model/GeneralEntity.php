@@ -56,7 +56,6 @@ abstract class GeneralEntity extends EskymoListenableObject implements IEntity {
 	    }
 	}
 	$this->loadId($source);
-	$this->setState(IEntity::STATE_PERSISTED);
 	return $this;
     }
 
@@ -96,6 +95,7 @@ abstract class GeneralEntity extends EskymoListenableObject implements IEntity {
     protected function loadId(array $source) {
 	$key = $this->getIdName();
 	if (isset($source[$key])) {
+	    $this->setState(IEntity::STATE_PERSISTED);
 	    $this->setId($source[$key]);
 	}
     }
