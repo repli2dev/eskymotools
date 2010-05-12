@@ -32,7 +32,7 @@ abstract class AEntityFactory implements IEntityFactory
 
 	public function fetchAndCreate(IDataSource $source) {
 		$row = $source->fetch();
-		return empty($row) ? NULL : $this->createEmpty()->loadDataFromArray($row->getArrayCopy(), "Load");
+		return empty($row) ? NULL : $this->createEmpty()->loadDataFromArray($row->toArray(), "Load");
 	}
 
 	public function fetchAndCreateAll(IDataSource $source){
