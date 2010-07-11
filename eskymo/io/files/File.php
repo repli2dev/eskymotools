@@ -470,7 +470,12 @@ class File extends /*Nette\*/Object
 		if (Tools::catchError($msg)) {
 			throw new IOException($msg, self::ERROR_GENERAL);
 		}
-		return $list;
+                if (empty($list)) {
+                    return array();
+                }
+                else {
+                    return $list;
+                }
 	}
 
 	/**
@@ -526,4 +531,3 @@ class File extends /*Nette\*/Object
 		return $check;
 	}
 }
-
