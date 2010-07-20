@@ -58,4 +58,12 @@ class ExtraString
 		return $result;
 	}
 
+	public function hardTruncate($s,$maxLen,$append = "\xE2\x80\xA6") {
+		if($maxLen >= mb_strlen($s)) {
+			return $s;
+		} else {
+			return mb_substr($s,0, $maxLen-1).$append;
+		}
+	}
+
 }
