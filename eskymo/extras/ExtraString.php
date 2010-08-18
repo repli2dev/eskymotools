@@ -21,6 +21,15 @@ class ExtraString
 	}
 
 	/**
+	 * It returns string similarity using Levenshtein distance.
+	 *
+	 * @return int
+	 */
+	public static function similarity($first, $second) {
+		return levenshtein($first, $second);
+	}
+
+	/**
 	 * The PHP function lcFirst is available in the PHP version >= 5.3.0,
 	 * this method does the same but in the lower PHP versions.
 	 *
