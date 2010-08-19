@@ -2,7 +2,7 @@
 
 <?php
 define ("CURRENT_DIR", dirname(__FILE__));
-define ("APP_DIR", CURRENT_DIR);
+define ("APP_DIR", CURRENT_DIR . "/../../../../../../app");
 define ("LIBS_DIR", CURRENT_DIR . "/../../../../../../libs");
 
 require_once(LIBS_DIR . "/Nette/loader.php");

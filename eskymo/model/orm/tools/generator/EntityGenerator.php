@@ -39,21 +39,6 @@ class EntityGenerator
 		if ($translated != $column->getName()) {
 			$attribute["translate"] = $column->getName();
 		}
-		$attribute["rules"] = array();
-		if (!$column->isNullable()) {
-			$attribute["rules"][] = array("type"	=> "filled");
-		}
-		if (String::lower($column->getNativeType()) == "text") {
-			$attribute["form"] = array(
-				"withResource"	=> "textarea"
-			);
-		}
-		elseif(String::lower($column->getNativeType()) == "enum") {
-			$attribute["type"] = array(
-				"name"	=> "enum"
-			);
-			// TODO: values
-		}
 		return $attribute;
 	}
 

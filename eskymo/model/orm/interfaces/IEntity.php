@@ -39,6 +39,11 @@ interface IEntity extends IEskymoObject, IListenable
 	const EVENT_DELETED	= "onDeleted";
 
 	/**
+	 * Evenet which describes loading already persisted entity
+	 */
+	const EVENT_LOAD_PERSISTED = "onLoadPersisted";
+
+	/**
 	 * Event which describes the entity has been perisisted
 	 */
 	const EVENT_PERSISTED	= "onPersisted";
@@ -70,7 +75,23 @@ interface IEntity extends IEskymoObject, IListenable
 	 * @see EntityPersistedEvent
 	 */
 	function addOnPersistListener(IListener $listener);
-	
+
+	/**
+	 * It adds a listener which is called after the etity is deleted
+	 *
+	 * @param IListener $listener
+	 * @see EntityPersistedEvent
+	 */
+	function addOnDeleteListener(IListener $listener);
+
+	/**
+	 * It adds a listener which is called after loading already persisted entity
+	 *
+	 * @param IListener $listener
+	 * @see EntityPersistedEvent
+	 */
+	function addOnLoadPersistedListener(IListener $listener);
+
 	/**
 	 * It deletes the entity
 	 */

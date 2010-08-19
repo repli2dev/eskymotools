@@ -103,6 +103,25 @@ class EntityTest extends EskymoTestCase {
 		$this->assertEquals("translated_name", $entity->name);
 	}
 
+	public function testModifiedAfterLoadPersisted() {
+		$input = array(
+			"translated_id"	=> 1,
+			"name"			=> "sdkvkdf",
+		);
+		$entity = $this->factory->createEmpty();
+		$entity->loadDataFromArray($input);
+		$this->assertEquals(array(), $entity->getData(NULL, IEntity::DATA_MODIFIED));
+		$this->assertEquals(array("name" => $entity->name), $entity->getData(NULL, IEntity::DATA_NOT_MODIFIED));
+	}
+
+	public function testModifiedAfterChange() {
+		$entity = $this->factory->createEmpty();
+		$this->assertEquals(array(), $entity->getData(NULL, IEntity::DATA_MODIFIED));
+		$entity->name = "sdvkhdbkv";
+		$this->assertEquals(array("name" => $entity->name), $entity->getData(NULL, IEntity::DATA_MODIFIED));
+		$this->assertEquals(array(), $entity->getData(NULL, IEntity::DATA_NOT_MODIFIED));
+	}
+
 	/** @TestThrow(MemberAccessException) */
 	public function testNotDefinedVarRead() {
 		$entity = $this->factory->createEmpty();
@@ -122,50 +141,3 @@ class EntityTest extends EskymoTestCase {
 
 }
 
-
-
-class TestEntityFactory extends AEntityFactory
-{
-
-	public function createEmpty() {
-		return new TestEntity($this);
-	}
-
-	public function insert(IEntity &$entity) {
-		return 1;
-	}
-
-	public function delete($id) {}
-
-	public function update(IEntity $entity) {}
-
-	/* -------------------*/
-
-	protected function createDeleter() {
-		return $this;
-	}
-
-	protected function createUpdater() {
-		return $this;
-	}
-
-	protected function createInserter() {
-		return $this;
-	}
-
-	protected function createSelector() {
-		throw new NotSupportedException();
-	}
-}
-
-/** @Id(translate=translated_id) */
-class TestEntity extends AEntity
-{
-	/**
-	 * @Translate(translated_name)
-	 * @Super(translate=super_name)
-	 * @Type(name=enum,values=petr:franta)
-	 */
-	protected $name;
-
-}
