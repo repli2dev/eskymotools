@@ -123,7 +123,7 @@ class AEntity extends GeneralEntity implements IEntity {
 	    throw new InvalidStateException("The type [enum] is set, but the values are not set.");
 	}
 	if (!empty($type) && isset($type->values) && !is_array($type->values)) {
-	    $type->values = split(":", $type->values);
+	    $type->values = explode(":", $type->values);
 	}
 	return $type;
     }

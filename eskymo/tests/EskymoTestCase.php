@@ -126,7 +126,7 @@ abstract class EskymoTestCase extends EskymoObject implements IEskymoTest
 	protected function assertEquals($expected, $actual, $message = NULL) {
 		if ($expected != $actual) {
 			if (empty($message)) {
-				$message = "Expected '$expected', given '$actual'. Test failed.";
+				$message = "Expected <" . var_export($expected, TRUE) . ">, given <" . var_export($actual, TRUE) . ">. Test failed.";
 			}
 			$this->fail($message);
 		}

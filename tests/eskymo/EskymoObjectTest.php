@@ -40,8 +40,9 @@ class EskymoObjectTest extends EskymoTestCase
 
 	public function testGetMethods() {
 		$a = new TestObject();
+
 		$this->assertFalse(in_array("privateMethod", $a->getMethods()));
-		$this->assertFalse(in_array("protectedMethod", $a->getMethods()));
+		$this->assertTrue(in_array("protectedMethod", $a->getMethods()));
 		$this->assertTrue(in_array("publicMethod", $a->getMethods()));
 	}
 

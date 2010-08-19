@@ -4,6 +4,12 @@ class Console
 
 	private final function  __construct() {}
 
+	/**
+	 * It loads arguments of the execution using pattern 'variable=value'.
+	 *
+	 * @param	array $argv
+	 * @return	array Array of arguments (variable => value).
+	 */
 	public static function loadArguments($argv) {
 		unset($argv[0]);
 		$result = array();
